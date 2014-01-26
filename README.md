@@ -117,9 +117,9 @@ Reading the notes
 
 The easiest way to view these notes is to plug any raw .ipynb file into an ipython notebook viewer, such as [this one](http://nbviewer.ipython.org/).
 
-- [Lecture 1 Notes](http://nbviewer.ipython.org/github/rblakemesser/distributed-systems-notes/blob/master/lecture_01.ipynb)
-- [Lecture 2 Notes](http://nbviewer.ipython.org/github/rblakemesser/distributed-systems-notes/blob/master/lecture_02.ipynb)
-- [Lecture 3 Notes](http://nbviewer.ipython.org/github/rblakemesser/distributed-systems-notes/blob/master/lecture_03.ipynb)
+- [Lecture 1 Notes](http://nbviewer.ipython.org/github/rblakemesser/distributed-systems/blob/master/notebook/lecture_01.ipynb)
+- [Lecture 2 Notes](http://nbviewer.ipython.org/github/rblakemesser/distributed-systems/blob/master/notebook/lecture_02.ipynb)
+- [Lecture 3 Notes](http://nbviewer.ipython.org/github/rblakemesser/distributed-systems/blob/master/notebook/lecture_03.ipynb)
 
 Contribute
 =================
