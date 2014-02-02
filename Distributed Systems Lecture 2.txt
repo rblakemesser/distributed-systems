@@ -1,0 +1,233 @@
+Lecture Goals:
+1. Clocks
+     - Lamport’s Clock
+     - Vector Clock
+     - Direct Dependency Clock
+2. Locks
+     - Centralized
+     - Lamport’s Algorithm
+     - Ricart & Agorwala’s Algorithm
+
+E: set of events
+->: happened-before relation
+
+Event-based model
+
+Can also think of a state-based model
+
+Direct Dependency Clock
+     only send your own value, rather than the whole vector
+
+e -> f iff DC(e) < DC(f)  (direct dependency clock)  — only happened-before if it DIRECTLY precedes another state
+
+Basic chat server
+shared window - we want to only have one person typing in it at one time
+problem of Mutual Exclusion
+     Safety - two processes should not use the same resource at the same time
+          There can be at most one process in the critical section at any time.
+          “Critical Section” - code that uses the resource     
+     Progress
+          If one or more processes are trying to enter the Critical Section, then at least one process succeeds
+     Starvation Freedom
+          If any process wants to enter the Critical Section, then eventually it is able to.
+     
+Processes P1 … Pn
+
+Centralized Algorithm
+     Server maintains a queue of requests
+     take the first request, send them a token, allow them to process
+
+Possible distributed solution:  every process maintains a queue of requests
+     each queue must be identical
+     use a timestamp for each request.  to maintain total order, if two requests are concurrent, break ties via processor id
+
+     Lamport’s Algorithm  (Assume FIFO)
+          To make a request:  send timestamp request message to all
+          On receiving a request, insert the request in the request queue (ordered by timestamps and processor id)
+                    then, send an acknowledgement
+          Pi can enter Critical Section if it is at the head of its queue, AND it’s received acknowledgements from everyone else.
+               If a competing request is received before the ACK, then we can determine which is first
+               If one is received after the ACK, it happened after the initial request
+          To release Critical Section:  send a release message to all
+               On receiving a release message, remove the corresponding request from the queue
+
+          # of messages per critical section for n processes
+          n-1 requests
+          n-1 ACKs
+          n-1 releases
+          3(n-1) total messages
+
+          each process has:
+               q: array [1 .. n ]  // q [ j ] = request timestamps
+               v: array [1 .. n ]  // direct dependency clock   v[ j ] (j != i) = the timestamp of the last message received from Pj 
+               the processor with the smallest q value can enter the critical section if EVERYONE has entries in v with > q[ i ] 
+
+     Can we combine ACK and releases into “OK” messages?
+
+     R&A Algorithm
+          REQ: send “request” message to all 
+          On receiving “req” - if I am not interested in critical section OR my request has a bigger timestamp
+                    Then send OK
+               else:
+                    insert the request into pending Q
+          Pi can enter critical section on receiving (n-1) OKs
+          To release CS: send OK to everyone in pending Q, empty pending Q 
+
+——————————————————————————
+Dining Philosopher Algorithm
+Quorum Based Algorithms
+
+
+CONFLICT GRAPH (undirected)
+     set of nodes (corresponding to processes)
+     edges correspond to the conflict we are trying to model
+          any two connected edges cannot be in the critical section at the same time
+
+CONFLICT RESOLUTION GRAPH
+     adds direction to edges indicating priority at each edge
+          u -> v == u has priority over v
+
+Source node:
+     u is a source node if it has priority over all of its neighbors
+Invariant: 
+     Conflict Resolution Graph is acyclic at all times
+Lemma: if there are no cycles, there must be a source node
+     Claim: every finite directed acyclic graph has at least one source node
+     follow the graph backward from any point - either go back up the edges, repeat a node (making a cycle) or find a source node
+“Eating Rule” 
+     A process can eat only if it has all the forks (it is a source node) for edges incident to it.  
+“Edge Reversal Rule” 
+     On finishing the eating session, all outgoing edges on that node are reversed
+
+Claim: finite acyclic graph + edge reversal rule implies that the graph stays acyclic
+     Why?  changing a source node to a sink node will not cause a cycle - either way, all edges are going in or all are going out
+
+u —— v 
+number of times u gets to eat and number of times v gets to eat cannot differ by more than 1  (two neighbors cannot differ by >= 1)
+
+path of length d - nodes on ends can differ by at most d
+
+Fork - can be clean or dirty 
+u -> v == u has clean fork or v has dirty fork
+
+Initially, all forks are dirty
+you would only send a request if you NEED a fork and don’t have one
+number of messages sent is 2( # of missing forks)
+
+Quorum Based Algorithms
+Maekawa’s Algorithm  
+
+Centralized algorithm - message complexity 3 messages per entry into critical section
+Lamport’s - 3 (n-1) messages per entry into critical section
+Quorums - if two request sets overlap, no need to ask both times
+
+Every two request sets (quorums) must have non-empty intersection
+
+Quorum - any row + any column 
+request permission from each node in your quorum - O(sqrt(n) ) 
+when you make a request, use Lamport’s clock - permission is given to the smallest timestamp
+
+satisfies Safety, Progress, and Starvation-Freedom constraints
+
+X = { P1, P2, … , P16 }
+Quorum system = { {P1, P2, P3, P4}, {P1, P5, P9, P13} }
+                              { {P1, P2, P3, P4}, {P2, P6, P9, P14} } 
+
+Ask: any full row  + processes in your column and below that row
+
+Crumbling Wall - different numbers of processes per row
+i.e.
+2
+1
+4
+
+any full row + one node from each row below you 
+
+CW(n1, n2, …, nk)
+1
+2
+3
+…
+k
+
+CW(1, n-1)
+1
+n-1
+possible quorums: { {P1, Pi (i != 1) },  { P2, P3, ... Pn } } 
+
+Triangular Quorum
+1
+2 
+3
+etc.
+Quorum size is always height of triangle (number of rows)
+
+Token-based algorithm
+     i.e. token-ring network
+
+Raymond’s Tree-Based Algorithm  (Arrow Protocol)
+     Arrange processes in a tree
+     edges point in the direction of the holder of the token
+     requests go toward token holder
+     send the token back to that process, reversing the edges to point to the new holder
+     could be any acyclic graph - not necessarily a binary tree
+
+next abstraction after Clocks and Locks
+Camera  - Chandy & Lamport  (global snapshot)
+
+Motivation:
+     - fault tolerance
+     - runtime verification of system
+     - Deadlock detection
+     - loss of token
+     - termination detection
+
+Global State Definition
+
+Poset (E, -> )
+Down-set of a poset
+subset G of E is a down-set IF:
+     for every e, f in G:  f exists in G AND (e -> f) implies e exists in G
+     if an event is included in a down set, all of its previous events must be included as well.
+
+     down-set is the same as consistent global state
+{ } = initial global state
+maximum down-set = final global state
+
+g = set of all consistent global states
+G1 <= G2  === G1 is contained in G2
+(g, <=) is: anti-symmetric, transitive, reflexive  (reflexive poset)
+
+
+Least Upper Bound  (analogous to max)
+
+Greatest Lower Bound  (analogous to min)
+
+if you can find both a least upper bound and a greatest lower bound for a poset, you have a lattice
+LATTICE = POSET + LUB + GLB for finite subsets.
+
+
+Test 1 will cover up to Chapter 8  (Chs 6-8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
