@@ -18,13 +18,14 @@ public class TheaterCLI {
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine cmd = parser.parse(options, args);
-            int port = Integer.getInteger(cmd.getOptionValue("p"));
+            int port = Integer.parseInt(cmd.getOptionValue("p"));
 
             // SERVER
             if (cmd.hasOption("s")) {
                 int numSeats = Integer.parseInt(cmd.getOptionValue("s"));
                 OrderHandler orderHandler = new OrderHandler(numSeats);
                 System.out.println("Number of seats selected: " + numSeats);
+                UDPListen udpServer = new UDPListen(orderHandler);
             }
 
             // CLIENT
@@ -50,7 +51,8 @@ public class TheaterCLI {
                             try {
                                 String echoline = stdinp.readLine();
                                 if (echoline.equals("done")) break;
-                                byte[] buffer = echoline.getBytes();
+                                byte[] buffer = new byte[echoline.length()];
+                                buffer = echoline.getBytes();
                                 sPacket = new DatagramPacket(buffer, buffer.length, ia, port);
                                 datasocket.send(sPacket);
                                 byte[] rbuffer = new byte[1024];
