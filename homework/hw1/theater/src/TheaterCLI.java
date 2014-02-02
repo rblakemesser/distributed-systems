@@ -59,7 +59,7 @@ public class TheaterCLI {
                                 byte[] rbuffer = new byte[1024];
                                 rPacket = new DatagramPacket(rbuffer, rbuffer.length);
                                 datasocket.receive(rPacket);
-                                response = new String(rPacket.getData());
+                                response = new String(rPacket.getData(), 0, rPacket.getLength());
                                 System.out.println(response);
                             } catch (IOException e) {
                                 System.err.println(e);

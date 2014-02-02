@@ -11,12 +11,14 @@ public class UDPListen {
         try {
             DatagramSocket datasocket = new DatagramSocket(port);
             byte[] buf = new byte[len];
-            datapacket = new DatagramPacket(buf, buf.length);
+            //datapacket = new DatagramPacket(buf, buf.length);
             while (true) {
                 String response;
                 try {
+                    datapacket = new DatagramPacket(buf, buf.length);
                     datasocket.receive(datapacket);
-                    String clientCommand = new String(datapacket.getData());
+                    String clientCommand = new String(datapacket.getData(), 0, datapacket.getLength());
+
                     String[] splitCommand = clientCommand.split(" ");
                     if (splitCommand[0].equals("reserve") && splitCommand.length == 2) {
                         response = oh.reserve(splitCommand[1]);
