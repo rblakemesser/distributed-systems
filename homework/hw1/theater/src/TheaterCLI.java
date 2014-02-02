@@ -1,6 +1,7 @@
 import org.apache.commons.cli.*;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
@@ -28,18 +29,20 @@ public class TheaterCLI {
 
             // CLIENT
             else if (cmd.hasOption("c")) {
+                String hostname;
+                String message;
+                String response;
+                if (cmd.hasOption("ip")) {
+                    hostname = cmd.getOptionValue("ip");
+                }
+                else {
+                    hostname = "localhost";
+                }
                 BufferedReader stdinp = new BufferedReader(new InputStreamReader(System.in));
 
                 // UPD MODE
                 if (cmd.hasOption("u")) {
-                    String hostname;
                     DatagramPacket sPacket, rPacket;
-                    if (cmd.hasOption("ip")) {
-                        hostname = cmd.getOptionValue("ip");
-                    }
-                    else {
-                        hostname = "localhost";
-                    }
                     try {
                         InetAddress ia = InetAddress.getByName(hostname);
                         DatagramSocket datasocket = new DatagramSocket();
@@ -53,8 +56,8 @@ public class TheaterCLI {
                                 byte[] rbuffer = new byte[1024];
                                 rPacket = new DatagramPacket(rbuffer, rbuffer.length);
                                 datasocket.receive(rPacket);
-                                String retstring = new String(rPacket.getData());
-                                System.out.println(retstring);
+                                response = new String(rPacket.getData());
+                                System.out.println(response);
                             } catch (IOException e) {
                                 System.err.println(e);
                             }
@@ -68,7 +71,17 @@ public class TheaterCLI {
 
                 // TCP MODE
                 else if (cmd.hasOption("t")) {
-
+                    while (true){
+                        BufferedReader inFromUser = new BufferedReader( new InputStreamReader(System.in));
+                        Socket clientSocket = new Socket(hostname, port);
+                        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+                        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                        message = inFromUser.readLine();
+                        outToServer.writeBytes(message + '\n');
+                        response = inFromServer.readLine();
+                        System.out.println(response);
+                        clientSocket.close();
+                    }
                 }
 
                 else {
@@ -83,6 +96,10 @@ public class TheaterCLI {
         }
         catch (ParseException parseExcept) {
             System.out.println(parseExcept.getMessage());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
