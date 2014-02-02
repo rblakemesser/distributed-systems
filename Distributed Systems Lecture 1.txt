@@ -1,0 +1,284 @@
+Lecture Goals
+1. goals of the course
+2. course syllabus
+3. grading
+4. UDP/TCP
+
+—————————————————————
+
+byzantine generals
+
+two new primitives - send message and receive message
+     for communication and synchronization
+
+Distributed systems - characteristics we will use
+     no shared clock
+     no shared memory (take actions based on local knowledge)
+     no accurate failure detection (how long do you wait for a response?) (slow process vs dead process)
+
+     
+Look up Java - Synchronized, Wait, Notify
+
+——————————
+How to send and receive messages
+
+TCP - transition control protocol
+UDP - User Datagram Protocol
+
+TCP vs UDP
+
+TCP
+abstraction: pipe from sender to receiver, phone call  (session-based)
+reliability: uses ACKs to ensure delivery
+overhead: minimal
+FIFO 
+
+UDP
+abstraction: telegraph, mail
+reliability: not reliable - does not check that the message was received
+overhead: low
+not necessarily FIFO
+
+————————————————————
+
+UDP
+
+Java need to know:
+     DatagramPacket
+     DatagramSocket
+
+Internet address = (IP, port)
+to create a packet:
+     need who it’s going to (address)
+     what’s inside it
+
+send: non-blocking
+receive: blocking
+
+————————————————————
+
+TCP
+
+Java need to know
+     ServerSocket
+     Socket      (client-side)
+
+
+Server maintains a table of:
+
+process name, hostname, port #
+
+Server socket - accept: blocking, returns a socket
+
+
+————————————————————
+Chapter 7 
+How to model a distributed computation?
+Interleaving model
+Happened-before model
+
+
+E = set of events of the computation
+e1, e2, e3, … : sequential trace
+
+in distributed system (Interleaving Model):
+P1 executed e1
+P2 executed f1
+P1 executed e2
+P3 executed g1
+
+see: Leslie Lamport:  Time, Clock, and Order of Events in Distributed Systems
+“Happened-before” model
+
+***
+E = set of events of the computation   (instantaneous events)
+-> = happened-before  (binary relation defined on E)
+
+1. If e and f are on the same process, and e is executed before f, then e -> f
+
+2. If e is send of a message, and f is the corresponding receive event, then e -> f
+
+3. There exists g, such that e -> g AND g -> f  => (implies) e -> f
+
+Properties of -> 
+
+1. -> is irreflexive
+     for all e: not (e -> e)
+
+2. -> is transitive
+     for all e,f,g  where e -> f and f -> g,  e -> g
+
+
+s: set 
+e.g. x = {a, b, c}
+
+R: Binary relation is a subset of XxX
+cartesian product X x X = { (a,a) (a,b) (a,c), 
+                                            (b,a),(b,b),(b,c),
+                                            (c,a),(c,b),(c,c) }
+
+how many binary relations are possible?  2^9 - each relation could be include or not
+
+R is reflexive if:  for all x in X such that (x,x) exist in R
+R is irreflexive if: for all x in X, (x,x) does NOT exist in R
+R is symmetric if: for all x,y in X: (x,y) exists in R implies (y, x) exists in R
+R is asymmetric if: for all x,y in X: (x,y) exists in R implies (y, x) does NOT exist in R
+R is anti-symmetric if: for all x,y in X: if (x,y) exists in R and (y,x) exists in R, then x == y
+R is transitive if: for all x,y,z in X: if (x,y) exists in R and (y,z) exists in R, then (x,z) exists in R
+R is total if: for all x,y in X: (x,y) exists in R OR (y,x) exists in R
+
+
+if you graph the vectors, reflexive says there is a self-loop at every node.
+irreflexive says there is no self-loop at any node
+
+
+ex: 
+X = natural numbers
+R = (x,y) exist in R iff x mod 5 == y mod 5
+
+
+X = natural numbers
+R = (x,y) exist in R iff x <= y
+this is reflexive, antisymmetric, transitive
+
+X: all natural numbers
+R: (x,y) exist in R iff x % 5 == y % 5
+reflexive, symmetric, transitive
+
+X: all subsets of a set (2^y values)
+R:  (x,y) exist in R iff x is a subset of y
+reflexive, antisymmetric, transitive
+
+
+
+if something is irreflexive and transitive, call it Irreflexive partial order
+if something is reflexive and antisymmetric, transitive, call it reflexive partial order
+
+***
+
+Happened-before diagrams
+
+happened-before is NOT total
+
+e || f == e concurrent with f
+     defined as NOT (e -> f) AND NOT (f -> e)
+[ ]reflexive, symmetric, transitive?  show that || is not transitive
+
+MIT Open Courseware Mathematics for Computer Science
+
+
+poset = partially ordered set
+
+————————————————————
+
+poset
+Logical Clocks
+Vector Clocks
+
+(X, <) is a poset if < is an irreflexive, transitive relation  (asymmetric)  SEE HOMEWORK
+(E, ->) is a oset
+     -> is irreflexive, transitive
+(X, <=) is a reflexive poset if
+     <= is reflexive, antisymmetric, transitive
+
+
+Logical Clock  (Lamport’s Clock)
+Pi
+     Int c = 0;
+
+Internal Event
+     c++;
+Send Event
+     c++;
+     include c in outgoing message
+Receive event (with time d)
+     c = max(c+1, d+1)
+
+(E, ->)
+
+c: takes in events E, maps them to the set of natural numbers
+e -> f => C(e) < C(f)
+
+C(e) = 50
+C(f) = 60 
+
+could be e -> f, f -> e, e || f
+
+could only be e -> f or e || f
+
+
+Sometimes you want unique timestamps and total order property for some applications
+give each client an arbitrary ordering
+Lamport’s Timestamp = (counter, process id (pid) )
+(51, 2) < (60, 1) 
+(51, 2) < (51, 3)
+(C, pid1) < (d, pid2) defined as:  either (c <d ) OR ( (c == d) and (pid1 < pid2) )
+ASSUMES: all pids are unique and totally ordered
+
+
+Theorem:  (Lamport ’78)
+     for all e,f:  e -> f => C(e) < C(f)
+
+
+Theorem:  Fidge & Mattern ‘88
+     for all e,f:  e -> f <=> (if and only if) V(e) < V(f)
+
+
+Vector Clock
+Pi
+     v: array [1..n] of integers
+          initially for all j != i:  v[ j ] = 0
+                                         v[ i ] = 1
+
+Internal event:
+     v[ i ]++;
+Send Event:
+     v[ i ]++;
+     send v with the message
+Receive Event
+     update v with received vector w
+          v = max (v,w)  (per component)
+          v[ i ]++; 
+
+Comparing vectors:
+x <= y defined as:
+     for all i: x[ i ] <= y [ i ]
+
+x < y defined as:
+     for all i: x[ i ] <= y[ i ] AND there exists an i such that x [ i ] < y [ i ]         
+     (x <= y) && (x != y)
+
+V(e) = (3, 0, 0)
+V(f) = (0, 0, 3)
+
+Proof of e -> f <=> V(e) < V(f)
+(=>)  easy  - if there’s a path from e to f, the vectors are increasing
+
+(<=)  NOT e -> f  => V(e) is NOT < V(f)
+     cannot receive an updated counter except from an event that happened before it
+     if e did not happen before f, then the counter value at e could not be known at f
+          therefore, e’s counter value must be >= the value f has for e’s value
+
+     Let e be on process i
+     claim: 
+          V(f) [ i ] < V(e)[ i ] 
+          therefore, V(e) is NOT < V(f)
+
+
+Direct Dependency Clock
+Matrix Clock
+
+
+
+————————————————————
+
+
+
+
+
+
+
+
+
+
+
