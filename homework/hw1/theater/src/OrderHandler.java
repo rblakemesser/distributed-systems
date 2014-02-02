@@ -10,11 +10,13 @@ public class OrderHandler {
     }
 
     public String bookSeat(String patronName, int seatNumber){
-        if (this.seatMap.containsValue(seatNumber)){
-            return seatNumber + " is not available";
+        if (!this.seatMap.containsValue(seatNumber) &&
+                !this.seatMap.containsKey(patronName)){
+            this.seatMap.put(patronName, seatNumber);
+            return "Seat assigned to you is " + seatNumber;
         }
-        this.seatMap.put(patronName, seatNumber);
-        return "Seat assigned to you is " + seatNumber;
+        return seatNumber + " is not available";
+
     }
 
     public String reserve(String patronName) {
