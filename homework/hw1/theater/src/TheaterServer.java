@@ -1,8 +1,5 @@
 import java.util.HashMap;
 
-/**
- * Created by blake on 1/27/14.
- */
 public class TheaterServer {
     private int numSeats;
     public HashMap<Integer, String> seatMap;
