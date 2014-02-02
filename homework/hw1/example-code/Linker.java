@@ -29,7 +29,7 @@ public class Linker {
             sendMsg(destIds.getEntry(i), tag, msg);
         }
     }
-    public Message receiveMsg(int fromId) throws IOException  {
+    public Msg receiveMsg(int fromId) throws IOException  {
         String getline = dataIn[fromId].readLine();
         Util.println(" received message " + getline);
         StringTokenizer st = new StringTokenizer(getline);
@@ -37,7 +37,7 @@ public class Linker {
         int destId = Integer.parseInt(st.nextToken());
         String tag = st.nextToken();
         String msg = st.nextToken("#");
-        return new Message(srcId, destId, tag, msg);
+        return new Msg(srcId, destId, tag, msg);
     }
     public int getMyId() { return myId; }
     public int getNumProc() { return N; }
