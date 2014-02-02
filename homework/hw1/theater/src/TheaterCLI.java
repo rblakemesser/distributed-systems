@@ -10,14 +10,17 @@ public class TheaterCLI {
 
             // SERVER
             if (cmd.hasOption("s")) {
-                boolean serverMode = true;
+                System.out.println("Running in server mode!");
                 int numSeats = Integer.parseInt(cmd.getOptionValue("s"));
-                System.out.println("Running in server mode! " + numSeats + " seats selected for theater.");
+                System.out.println("Number of seats selected: " + numSeats);
             }
 
             // CLIENT
-            else {
+            else if (cmd.hasOption("p")) {
                 System.out.println("Running in client mode!");
+            }
+
+            else {
             }
 
         }
