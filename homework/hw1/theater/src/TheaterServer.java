@@ -11,9 +11,9 @@ public class TheaterServer {
     public TheaterServer(int numSeats) {
         this.numSeats = numSeats;
         this.seatMap = new HashMap<Integer, String>();
-        this.orderHandler = new OrderHandler(seatMap, numSeats);
-        this.orderReceiver = new OrderReceiver(orderHandler);
-        this.dgServer = new UDPListen(orderReceiver);
+//        this.orderHandler = new OrderHandler(seatMap, numSeats);
+//        this.orderReceiver = new OrderReceiver(orderHandler);
+//        this.dgServer = new UDPListen(orderReceiver);
 
     }
 
