@@ -18,13 +18,15 @@ public class TCPListen {
 
         while(true){
             Socket connectionSocket = tcpSocket.accept();
-            byte[] buf = new byte[len];
+            //byte[] buf = new byte[len];
             /* Read the packet, find out what to do with it, and
                pass it to the appropriate function
              */
             BufferedReader clientReader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
             DataOutputStream clientReply = new DataOutputStream(connectionSocket.getOutputStream());
             String clientCommand = clientReader.readLine();
+
+
             /* Parse and handle the command
                capture the reply from the server in response
              */
