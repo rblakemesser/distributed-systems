@@ -44,7 +44,7 @@ public class OrderHandler {
     }
 
     public String delete(String patronName) {
-        if (!(seatMap.containsValue(patronName))) {
+        if (!(seatMap.containsKey(patronName))) {
             return "No reservation found for " + patronName;
         }
         else {
