@@ -9,35 +9,30 @@ public class UDPListen {
         //OrderHandler orderHandler = new OrderHandler(100);
 
         try {
-
             DatagramSocket datasocket = new DatagramSocket(port);
             byte[] buf = new byte[len];
             datapacket = new DatagramPacket(buf, buf.length);
             while (true) {
+                String response;
                 try {
                     datasocket.receive(datapacket);
-                    String clientCommand = datapacket.getData().toString();
+                    String clientCommand = new String(datapacket.getData());
                     String[] splitCommand = clientCommand.split(" ");
-                    String response = null;
-                    if(splitCommand[0].equals("reserve") && splitCommand.length == 2){
-                        // call OrderHandler.reserve(splitCommand[1]);
+                    if (splitCommand[0].equals("reserve") && splitCommand.length == 2) {
                         response = oh.reserve(splitCommand[1]);
-                    }else if(splitCommand[0].equals("bookSeat") && splitCommand.length == 3){
-                        // call OrderHandler.bookSeat(splitCommand[1], splitCommand[2]);
+                    } else if(splitCommand[0].equals("bookSeat") && splitCommand.length == 3) {
                         response = oh.bookSeat(splitCommand[1], Integer.parseInt(splitCommand[2]));
-                    }else if(splitCommand[0].equals("search") && splitCommand.length == 2){
-                        // call OrderHandler.search(splitCommand[1]);
+                    } else if(splitCommand[0].equals("search") && splitCommand.length == 2) {
                         response = oh.search(splitCommand[1]);
-                    }else if(splitCommand[0].equals("delete") && splitCommand.length == 2){
-                        // call OrderHandler.delete(splitCommand[1]);
+                    } else if(splitCommand[0].equals("delete") && splitCommand.length == 2) {
                         response = oh.delete(splitCommand[1]);
-                    }else {
-                        // reply "I don't understand the command"
+                    } else {
+                        response = "ERROR"; // reply "I don't understand the command"
                     }
 
                     returnpacket = new DatagramPacket(
                             response.getBytes(),
-                            datapacket.getLength(),
+                            response.getBytes().length,
                             datapacket.getAddress(),
                             datapacket.getPort());
                     datasocket.send(returnpacket);

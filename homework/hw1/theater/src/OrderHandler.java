@@ -35,7 +35,7 @@ public class OrderHandler {
     }
 
     public String search(String patronName) {
-        if (!(this.seatMap.containsKey(patronName))) {
+        if (!(seatMap.containsKey(patronName))) {
             return "No reservation found for " + patronName;
         }
         else {

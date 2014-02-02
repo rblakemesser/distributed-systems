@@ -25,7 +25,7 @@ public class TheaterCLI {
                 int numSeats = Integer.parseInt(cmd.getOptionValue("s"));
                 OrderHandler orderHandler = new OrderHandler(numSeats);
                 System.out.println("Number of seats selected: " + numSeats);
-                UDPListen udpServer = new UDPListen(orderHandler);
+                new UDPListen(orderHandler);
             }
 
             // CLIENT
@@ -41,7 +41,7 @@ public class TheaterCLI {
                 }
                 BufferedReader stdinp = new BufferedReader(new InputStreamReader(System.in));
 
-                // UPD MODE
+                // UDP MODE
                 if (cmd.hasOption("u")) {
                     DatagramPacket sPacket, rPacket;
                     try {
@@ -49,11 +49,12 @@ public class TheaterCLI {
                         DatagramSocket datasocket = new DatagramSocket();
                         while (true) {
                             try {
-                                String echoline = stdinp.readLine();
+                                String echoline = new String(stdinp.readLine());
+                                int inputLength = echoline.length();
                                 if (echoline.equals("done")) break;
                                 byte[] buffer = new byte[echoline.length()];
                                 buffer = echoline.getBytes();
-                                sPacket = new DatagramPacket(buffer, buffer.length, ia, port);
+                                sPacket = new DatagramPacket(buffer, inputLength, ia, port);
                                 datasocket.send(sPacket);
                                 byte[] rbuffer = new byte[1024];
                                 rPacket = new DatagramPacket(rbuffer, rbuffer.length);
