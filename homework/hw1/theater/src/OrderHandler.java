@@ -1,12 +1,12 @@
 import java.util.HashMap;
 
 public class OrderHandler {
-    private HashMap<String,Integer> seatMap;
     private final int numSeats;
+    private HashMap<String,Integer> seatMap;
 
-    public OrderHandler(HashMap<String, Integer> seatMap, int numSeats) {
-        this.seatMap = seatMap;
+    public OrderHandler(int numSeats) {
         this.numSeats = numSeats;
+        seatMap = new HashMap<String, Integer>();
     }
 
     public String bookSeat(String patronName, int seatNumber){
