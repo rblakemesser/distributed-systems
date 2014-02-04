@@ -39,14 +39,14 @@ public class TheaterCLI {
 
             // CLIENT
             else if (cmd.hasOption("c")) {
-                String hostname;
+                String addy;
                 String message;
                 String response;
                 if (cmd.hasOption("ip")) {
-                    hostname = cmd.getOptionValue("ip");
+                    addy = cmd.getOptionValue("ip");
                 }
                 else {
-                    hostname = "localhost";
+                    addy = "127.0.0.1";
                 }
                 BufferedReader stdinp = new BufferedReader(new InputStreamReader(System.in));
 
@@ -54,7 +54,7 @@ public class TheaterCLI {
                 if (cmd.hasOption("u")) {
                     DatagramPacket sPacket, rPacket;
                     try {
-                        InetAddress ia = InetAddress.getByName(hostname);
+                        InetAddress ia = InetAddress.getByName(addy);
                         DatagramSocket datasocket = new DatagramSocket();
                         while (true) {
                             try {
@@ -84,8 +84,8 @@ public class TheaterCLI {
                 // TCP MODE
                 else if (cmd.hasOption("t")) {
                     while (true){
-                        BufferedReader inFromUser = new BufferedReader( new InputStreamReader(System.in));
-                        Socket clientSocket = new Socket(hostname, port);
+                        BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+                        Socket clientSocket = new Socket(InetAddress.getByName(addy), port);
                         DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
                         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                         message = inFromUser.readLine();

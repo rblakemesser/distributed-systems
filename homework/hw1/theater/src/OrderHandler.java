@@ -33,7 +33,7 @@ public class OrderHandler {
                 return bookSeat(patronName, i);
             }
         }
-        return "Sold out -- no seats available!";
+        return "Sold out - no seats available";
     }
 
     public String search(String patronName) {
@@ -50,8 +50,9 @@ public class OrderHandler {
             return "No reservation found for " + patronName;
         }
         else {
+            int seatNum = seatMap.get(patronName);
             seatMap.remove(patronName);
-            return patronName + "'s reservation has been deleted";
+            return seatNum + "";
         }
     }
 }

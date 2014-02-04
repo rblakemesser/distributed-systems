@@ -6,7 +6,6 @@ import java.net.*;
 
 public class TCPListen extends Thread {
     int port;
-    int len = 1024;
     OrderHandler oh;
 
     public TCPListen(OrderHandler oh){
@@ -21,7 +20,6 @@ public class TCPListen extends Thread {
 
     @Override
     public void run() {
-        //super.run();
         try{
             ServerSocket tcpSocket = new ServerSocket(port);
             while(true){
@@ -31,9 +29,9 @@ public class TCPListen extends Thread {
                     BufferedReader clientReader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
                     DataOutputStream clientReply = new DataOutputStream(connectionSocket.getOutputStream());
                     String clientCommand = clientReader.readLine();
-                /* Parse and handle the command
-                    capture the reply from the server in response
-                */
+                    /* Parse and handle the command
+                        capture the reply from the server in response
+                    */
                     String response = handleCommand(clientCommand);
 
                     clientReply.writeBytes(response + "\n");
