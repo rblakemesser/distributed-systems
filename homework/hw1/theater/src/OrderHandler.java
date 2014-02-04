@@ -12,7 +12,7 @@ public class OrderHandler {
     public String bookSeat(String patronName, int seatNumber){
         if (!this.seatMap.containsValue(seatNumber)) {
             if (!this.seatMap.containsKey(patronName)) {
-                if (!(seatNumber < numSeats)) {
+                if (seatNumber < numSeats) {
                     this.seatMap.put(patronName, seatNumber);
                     return "Seat assigned to you is " + seatNumber;
                 }
