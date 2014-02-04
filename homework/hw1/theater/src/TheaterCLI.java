@@ -30,7 +30,11 @@ public class TheaterCLI {
                 OrderHandler orderHandler = new OrderHandler(numSeats);
                 System.out.println("Number of seats selected: " + numSeats);
                 //new UDPListen(orderHandler);
-                new TCPListen(orderHandler);
+                TCPListen t = new TCPListen(orderHandler);
+                UDPListen u = new UDPListen(orderHandler);
+                t.start();
+                u.start();
+
             }
 
             // CLIENT
