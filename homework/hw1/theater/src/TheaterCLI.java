@@ -29,7 +29,8 @@ public class TheaterCLI {
                 int numSeats = Integer.parseInt(cmd.getOptionValue("s"));
                 OrderHandler orderHandler = new OrderHandler(numSeats);
                 System.out.println("Number of seats selected: " + numSeats);
-                new UDPListen(orderHandler);
+                //new UDPListen(orderHandler);
+                new TCPListen(orderHandler);
             }
 
             // CLIENT
