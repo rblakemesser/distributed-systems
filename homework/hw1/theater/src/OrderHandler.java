@@ -10,30 +10,30 @@ public class OrderHandler {
     }
 
     public String bookSeat(String patronName, int seatNumber){
-        if (!this.seatMap.containsValue(seatNumber) &&
-                !this.seatMap.containsKey(patronName)){
-            this.seatMap.put(patronName, seatNumber);
-            return "Seat assigned to you is " + seatNumber;
+        if (!this.seatMap.containsValue(seatNumber)) {
+            if (!this.seatMap.containsKey(patronName)) {
+                if (!(seatNumber < numSeats)) {
+                    this.seatMap.put(patronName, seatNumber);
+                    return "Seat assigned to you is " + seatNumber;
+                }
+                else {
+                    return "That seat doesn't exist!";
+                }
+            }
+            else {
+                return "Seat already booked against the name provided";
+            }
         }
         return seatNumber + " is not available";
-
     }
 
     public String reserve(String patronName) {
-        if (this.seatMap.containsKey(patronName)){
-            return "Seat already booked against the name provided";
-        }
-        else if (this.seatMap.size() >= numSeats) {
-            return "Sold out -- No seat available";
-        }
-        else {
-            for (int i=0; i < numSeats; i++) {
-                if (!seatMap.containsValue(i)) {
-                    return bookSeat(patronName, i);
-                }
+        for (int i=0; i < numSeats; i++) {
+            if (!seatMap.containsValue(i)) {
+                return bookSeat(patronName, i);
             }
-            return "Error! Couldnt find a seat for " + patronName + " even though there should have been one available";
         }
+        return "Sold out -- no seats available!";
     }
 
     public String search(String patronName) {

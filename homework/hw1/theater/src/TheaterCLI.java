@@ -1,4 +1,8 @@
-import org.apache.commons.cli.*;
+import CommonsCLI.DefaultParser;
+import CommonsCLI.Options;
+import CommonsCLI.CommandLineParser;
+import CommonsCLI.CommandLine;
+import CommonsCLI.ParseException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
