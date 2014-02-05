@@ -34,7 +34,6 @@ public class TheaterCLI {
                 UDPListen u = new UDPListen(orderHandler);
                 t.start();
                 u.start();
-
             }
 
             // CLIENT
@@ -99,7 +98,6 @@ public class TheaterCLI {
                 else {
                     System.out.println("Invalid arguments-- you must select TCP or UDP");
                 }
-
             }
 
             else {
