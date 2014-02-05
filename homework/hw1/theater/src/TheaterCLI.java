@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 import java.net.*;
 
 public class TheaterCLI {
+    private static int port;
+    private static CommandLine cmd;
     public static void main(String[] args){
         Options options = new Options();
         options.addOption("p", true, "Port number (required all) For server: where to listen. For client: where to send.");
@@ -21,67 +23,71 @@ public class TheaterCLI {
         options.addOption("ip", true, "Server IP location (optional client only)");
         CommandLineParser parser = new DefaultParser();
         try {
-            CommandLine cmd = parser.parse(options, args);
-            int port = Integer.parseInt(cmd.getOptionValue("p"));
+            cmd = parser.parse(options, args);
+        }
+        catch (ParseException parseExcept) {
+            System.out.println(parseExcept.getMessage());
+        }
 
-            // SERVER
-            if (cmd.hasOption("s")) {
-                int numSeats = Integer.parseInt(cmd.getOptionValue("s"));
-                OrderHandler orderHandler = new OrderHandler(numSeats);
-                System.out.println("Number of seats selected: " + numSeats);
-                //new UDPListen(orderHandler);
-                TCPListen t = new TCPListen(orderHandler);
-                UDPListen u = new UDPListen(orderHandler);
-                t.start();
-                u.start();
+        port = Integer.parseInt(cmd.getOptionValue("p"));
+
+        // SERVER
+        if (cmd.hasOption("s")) {
+            int numSeats = Integer.parseInt(cmd.getOptionValue("s"));
+            OrderHandler orderHandler = new OrderHandler(numSeats);
+            System.out.println("Number of seats selected: " + numSeats);
+            TCPListen t = new TCPListen(port, orderHandler);
+            UDPListen u = new UDPListen(port, orderHandler);
+            t.start();
+            u.start();
+        }
+
+        // CLIENT
+        else if (cmd.hasOption("c")) {
+            String addy;
+            String message;
+            String response;
+            if (cmd.hasOption("ip")) {
+                addy = cmd.getOptionValue("ip");
             }
+            else {
+                addy = "localhost";
+            }
+            BufferedReader stdinp = new BufferedReader(new InputStreamReader(System.in));
 
-            // CLIENT
-            else if (cmd.hasOption("c")) {
-                String addy;
-                String message;
-                String response;
-                if (cmd.hasOption("ip")) {
-                    addy = cmd.getOptionValue("ip");
+            // UDP MODE
+            if (cmd.hasOption("u")) {
+                DatagramPacket sPacket, rPacket;
+                try {
+                    InetAddress ia = InetAddress.getByName(addy);
+                    DatagramSocket datasocket = new DatagramSocket();
+                    while (true) {
+                        try {
+                            String echoline = new String(stdinp.readLine());
+                            int inputLength = echoline.length();
+                            if (echoline.equals("done")) break;
+                            byte[] buffer = new byte[echoline.length()];
+                            buffer = echoline.getBytes();
+                            sPacket = new DatagramPacket(buffer, inputLength, ia, port);
+                            datasocket.send(sPacket);
+                            byte[] rbuffer = new byte[1024];
+                            rPacket = new DatagramPacket(rbuffer, rbuffer.length);
+                            datasocket.receive(rPacket);
+                            response = new String(rPacket.getData(), 0, rPacket.getLength());
+                            System.out.println(response);
+                        } catch (IOException e) {
+                            System.err.println(e);
+                        }
+                    } // while
+                } catch (UnknownHostException e) {
+                    System.err.println(e);
+                } catch (SocketException se) {
+                    System.err.println(se);
                 }
-                else {
-                    addy = "127.0.0.1";
-                }
-                BufferedReader stdinp = new BufferedReader(new InputStreamReader(System.in));
-
-                // UDP MODE
-                if (cmd.hasOption("u")) {
-                    DatagramPacket sPacket, rPacket;
-                    try {
-                        InetAddress ia = InetAddress.getByName(addy);
-                        DatagramSocket datasocket = new DatagramSocket();
-                        while (true) {
-                            try {
-                                String echoline = new String(stdinp.readLine());
-                                int inputLength = echoline.length();
-                                if (echoline.equals("done")) break;
-                                byte[] buffer = new byte[echoline.length()];
-                                buffer = echoline.getBytes();
-                                sPacket = new DatagramPacket(buffer, inputLength, ia, port);
-                                datasocket.send(sPacket);
-                                byte[] rbuffer = new byte[1024];
-                                rPacket = new DatagramPacket(rbuffer, rbuffer.length);
-                                datasocket.receive(rPacket);
-                                response = new String(rPacket.getData(), 0, rPacket.getLength());
-                                System.out.println(response);
-                            } catch (IOException e) {
-                                System.err.println(e);
-                            }
-                        } // while
-                    } catch (UnknownHostException e) {
-                        System.err.println(e);
-                    } catch (SocketException se) {
-                        System.err.println(se);
-                    }
-                }
-
-                // TCP MODE
-                else if (cmd.hasOption("t")) {
+            }
+            // TCP MODE
+            else if (cmd.hasOption("t")) {
+                try {
                     while (true){
                         BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
                         Socket clientSocket = new Socket(InetAddress.getByName(addy), port);
@@ -94,22 +100,16 @@ public class TheaterCLI {
                         clientSocket.close();
                     }
                 }
-
-                else {
-                    System.out.println("Invalid arguments-- you must select TCP or UDP");
+                catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-
             else {
+                System.out.println("Invalid arguments-- you must select TCP or UDP");
             }
-
-        }
-        catch (ParseException parseExcept) {
-            System.out.println(parseExcept.getMessage());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

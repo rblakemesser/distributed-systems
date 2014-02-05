@@ -5,15 +5,11 @@ public class UDPListen extends Thread{
     int port;
     int len = 1024;
     OrderHandler oh;
-    public UDPListen(OrderHandler oh) {
-        this(2018, oh);
-    }
 
     public UDPListen(int port, OrderHandler oh){
         this.port = port;
         this.oh = oh;
     }
-
 
     @Override
     public void run() {

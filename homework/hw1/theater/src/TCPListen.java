@@ -8,19 +8,14 @@ public class TCPListen extends Thread {
     int port;
     OrderHandler oh;
 
-    public TCPListen(OrderHandler oh){
-        this(2018, oh);
-    }
-
     public TCPListen(int port, OrderHandler oh) {
         this.oh = oh;
         this.port = port;
     }
 
-
     @Override
     public void run() {
-        try{
+        try {
             ServerSocket tcpSocket = new ServerSocket(port);
             while(true){
                 try {
@@ -39,8 +34,8 @@ public class TCPListen extends Thread {
                     System.err.println(se);
                 }
 
-                }
-            } catch (IOException e) {
+            }
+        } catch (IOException e) {
                 e.printStackTrace();
         }
     }
