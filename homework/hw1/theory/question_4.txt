@@ -1,0 +1,55 @@
+(a) P_i can enter the CS if Pi is one of the top k processes 
+of its queue and has received acks from all other processes. 
+Extended Mutex could be expressed as mostly the same as the
+basic LamportMutex given on p. 137 with an additional attribute
+for k, and a modified okayCS() method to allow entry if it can
+confirm that the critical section is being used by strictly
+fewer than k processes. e.g:
+
+public LamportMutexK extends Process implements Lock {
+    // unchanged code removed
+    int k; // max number of concurrent processes in CS
+
+    public LamportMutexK(Linker initComm, int k) {
+        super(initComm);
+        k = k;
+        // unchanged code removed
+    }
+
+    boolean okayCS() {
+        int numInCS = 0;
+        for (int j = 0; j < N; j++){
+            if (isGreater(q[myId], myId, q[j], j) | isGreater(q[myId], myId, v.getValue(j), j)) {
+                numInCS++;
+            }
+        }
+        if (numInCS >= k) {
+            return false;
+        }
+        return true;
+    }
+}
+
+
+(b) P_i may enter the CS if it is in the top k of its own queue 
+and has received okays from all other processes. 
+
+public class RAMutexK extends Process implements Lock {  
+    int k;
+    public RAMutexK(Linker initComm) {
+        super(initComm);
+        k = k;
+        // unchanged code removed
+    }
+    public synchronized void requestCS() {
+        c.tick();
+        myts = c.getValue();
+        broadcastMsg("request", myts);
+        numOkay = 0;
+        while (numOkay - k < N)
+            myWait(); 
+    }
+    // unchanged methods removed
+}
+
+
