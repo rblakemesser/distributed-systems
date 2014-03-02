@@ -1,15 +1,11 @@
-import com.sun.tools.javac.util.Pair;
-
-import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.ListIterator;
 
 public class LibraryClient {
     private int numServers;
     // Server list
     // Hashmap - server ID to (address, port)
-    private HashMap<Integer, Pair<InetAddress, Integer>> serverList = new HashMap<Integer, Pair<InetAddress, Integer>>();
+    private OtherServerList serverList;
 
     public LibraryClient(ArrayList<String[]> input, int pid) {
         numServers = Integer.parseInt(input.get(0)[0]);

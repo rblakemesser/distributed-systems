@@ -1,12 +1,5 @@
-import java.util.HashMap;
-import java.io.*;
-import java.net.*;
 
-/**
- * Created by douglasgunter on 2/11/14.
- */
 public class CommandHandler {
-    private HashMap<Integer, InetAddress> serverList;
     private int[] bookList;
 
     public CommandHandler(int[] bookList) {
@@ -29,7 +22,8 @@ public class CommandHandler {
         if (bookList[bookNum-1] == clientNum){
             bookList[bookNum-1] = 0;
             return "free " + clientNum + " " + bookNum;
-        }else{
+        }
+        else {
             return "fail " + clientNum + " " + bookNum;
         }
     }
@@ -49,10 +43,12 @@ public class CommandHandler {
         if (command.equals("reserve")){
             // run reserveBook
             response = reserveBook(clientId, bookNum);
-        }else if (command.equals("return")){
+        }
+        else if (command.equals("return")){
             // run returnBook
             response = returnBook(clientId, bookNum);
-        }else {
+        }
+        else {
             response = "Error";
         }
         return response;
