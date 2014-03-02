@@ -24,7 +24,7 @@ public class LibraryCLI {
             new LibraryServer(instructionsForProcess, pid);
         }
         else if (programModeArg.toLowerCase().startsWith("-c")) {
-            new LibraryClient(instructionsForProcess);
+            new LibraryClient(instructionsForProcess, pid);
         }
     }
 }
