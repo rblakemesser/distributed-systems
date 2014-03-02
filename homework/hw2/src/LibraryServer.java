@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class LibraryServer {
-    private DirectClock dc = null;
+    // private DirectClock dc;
     private int myId = -1;
     private int timeToWait = 0;
     private int killCounter = 0;
@@ -17,7 +17,7 @@ public class LibraryServer {
         int numProcs = Integer.parseInt(input.get(0)[0]);
         int numBooks = Integer.parseInt(input.get(0)[0]);
         myId = pid;
-        dc = new DirectClock(numProcs, pid);
+        // dc = new DirectClock(numProcs, pid);
 
         for (String[] line: input){
             // Add each line after the first to serverList
