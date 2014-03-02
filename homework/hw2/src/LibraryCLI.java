@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 public class LibraryCLI {
     String programModeArg;
     String inputFilename;
+    int pid;
     public static void main(String[] args) {
         new LibraryCLI(args);
     }
@@ -21,14 +22,13 @@ public class LibraryCLI {
         Pattern p = Pattern.compile("([/_a-z]+)([0-9]+)(\\.in)");
         Matcher m = p.matcher(inputFilename);
         if (m.find()) {
-            String pid = m.group(2);
-            int processId = Integer.parseInt(pid);
+            String processId = m.group(2);
+            pid = Integer.parseInt(processId);
             System.out.println("ID number parsed from filename: " + processId);
         }
         else {
             System.out.println("ERROR! input filename did not pass validation! No ID number detected.");
         }
-        int pid = 0; // TODO: Pull process id (server or client) from file name
 
         for (String i: splitInput) {
             instructionsForProcess.add(i.split(" "));
