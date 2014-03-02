@@ -10,7 +10,7 @@ public class OtherServer {
         this.id = id;
         String[] addressComponents = configString.split(":");
         if (!(addressComponents.length == 2)) {
-            throw new Exception("Server line in the config file must have two elements when split by a ':' ");
+            throw new Exception("No server detected on config line: " + configString);
         }
         this.address = InetAddress.getByName(addressComponents[0]);
         this.port = Integer.getInteger(addressComponents[1]);

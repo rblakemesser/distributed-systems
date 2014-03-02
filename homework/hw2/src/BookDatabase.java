@@ -8,9 +8,21 @@ public class BookDatabase {
         this.bookStatuses = new ArrayList<Integer>(this.numBooks);
     }
     public String reserveBook(int clientNumber, int bookNumber) {
-        return "ok";
+        if (bookStatuses.get(bookNumber) == null) {
+            return "cant someone has it already";
+        }
+        else {
+            bookStatuses.set(bookNumber, clientNumber);
+            return "ok client no " + clientNumber + " now has book no " + bookNumber;
+        }
     }
-    public String returnBook(int bookNumber) {
-        return "ok";
+    public String returnBook(int clientNumber, int bookNumber) {
+        if (!(bookStatuses.get(bookNumber) == clientNumber)) {
+            return "you dont even have that book how can you reserver it";
+        }
+        else {
+            bookStatuses.set(bookNumber, null);
+            return "ok client no " + clientNumber + " successfully returned book no " + bookNumber;
+        }
     }
 }
