@@ -14,11 +14,14 @@ public class LibraryCLI {
         String inputFileContents = LibraryFileHandler.getContents(iFile);
         String[] splitInput = inputFileContents.split("\n");
         ArrayList<String[]> instructionsForProcess = new ArrayList<String[]>();
+
+        int pid = 0; // TODO: Pull process id (server or client) from file name
+
         for (String i: splitInput) {
             instructionsForProcess.add(i.split(" "));
         }
         if (programModeArg.toLowerCase().startsWith("-s")) {
-            new LibraryServer(instructionsForProcess);
+            new LibraryServer(instructionsForProcess, pid);
         }
         else if (programModeArg.toLowerCase().startsWith("-c")) {
             new LibraryClient(instructionsForProcess);
