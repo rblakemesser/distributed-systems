@@ -11,11 +11,9 @@ X     Read input file
      Wait (after a command)
      Close connection
      Synchronize book lists   (top priority)
-     Synchronize client lists
 
      Data:
           Book list
-          Client list
 X          Server ID
 X          Time to wait
 X          Other server list
@@ -23,7 +21,7 @@ X          Other server list
 
 Client
      Read input file
-     Read standard input
+     Read standard input (?)
      Send messages
           Reserve
           Return
