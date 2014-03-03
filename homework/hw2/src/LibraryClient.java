@@ -1,32 +1,36 @@
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.ListIterator;
 
 public class LibraryClient {
     private int numServers;
-    // Server list
-    // Hashmap - server ID to (address, port)
-    private OtherServerList serverList;
+    private ServerList serverList;
 
-    public LibraryClient(ArrayList<String[]> input, int pid) {
-        numServers = Integer.parseInt(input.get(0)[0]);
-        for (int i = 1; i < 1 + numServers; i++){
-            // populate the server list
+    public LibraryClient(String[] splitConfigContents, int pid) {
+        numServers = Integer.parseInt(splitConfigContents[0]);
+        serverList = new ServerList(splitConfigContents);
+    }
+
+    public void processInstructions(ArrayList<String[]> input) {
+        System.out.println("processing instructions:\n" + input);
+        ListIterator commandList = input.listIterator(numServers + 1);
+        while (commandList.hasNext()) {
+            String[] splitCommand = (String[]) commandList.next();
+            System.out.println("first command: \n" + splitCommand.toString());
+            if (splitCommand.length == 2) {
+                long time = new Date().getTime();
+                int timeToWait = Integer.parseInt(splitCommand[1]);
+                while (new Date().getTime() - time < timeToWait) {
+                    // do nothing in sleep phase
+                }
+            }
+            else {
+                System.out.println(makeRequest(splitCommand));
+            }
         }
     }
 
-    public void processClientFile(ArrayList<String[]> input){
-        ListIterator commands = input.listIterator(numServers+1);
-        try{
-            String[] splitCommand = (String[]) commands.next();
-            if (splitCommand.length == 2){
-                // Go dormant for splitCommand[1] milliseconds
-            }else {
-                // Process the command - send it to one of the servers and wait for a response
-            }
-
-        }catch (IndexOutOfBoundsException e){
-            // Done with this file
-            return;
-        }
+    public String makeRequest(String[] request) {
+        return serverList.clientQuery(request);
     }
 }

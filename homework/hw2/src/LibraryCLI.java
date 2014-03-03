@@ -1,5 +1,4 @@
 import java.io.File;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,7 +15,6 @@ public class LibraryCLI {
         File iFile = new File(inputFilename);
         String inputFileContents = LibraryFileHandler.getContents(iFile);
         String[] splitInput = inputFileContents.split("\n");
-        ArrayList<String[]> instructionsForProcess = new ArrayList<String[]>();
         System.out.println("input filename: " + inputFilename);
 
         Pattern p = Pattern.compile("([/_a-z]+)([0-9]+)(\\.in)");
@@ -30,16 +28,14 @@ public class LibraryCLI {
             System.out.println("ERROR! input filename did not pass validation! No ID number detected.");
         }
 
-        for (String i: splitInput) {
-            instructionsForProcess.add(i.split(" "));
-        }
         if (programModeArg.toLowerCase().startsWith("-s")) {
             System.out.println("server mode");
-            new LibraryServer(instructionsForProcess, pid);
+            new LibraryServer(splitInput, pid);
         }
+
         else if (programModeArg.toLowerCase().startsWith("-c")) {
             System.out.println("client mode");
-            new LibraryClient(instructionsForProcess, pid);
+            new LibraryClient(splitInput, pid);
         }
     }
 }
