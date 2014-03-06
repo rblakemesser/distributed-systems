@@ -7,14 +7,16 @@ public class Linker {
     int myId, N;
     Connector connector;
     public IntLinkedList neighbors = new IntLinkedList();
-    public Linker(String basename, int id, int numProc) throws Exception {
+    public Linker(String basename, int id, int numProc, ServerList servers) throws Exception {
         myId = id;
         N = numProc;
         dataIn = new BufferedReader[numProc];
         dataOut = new PrintWriter[numProc];
-        Topology.readNeighbors(myId, N, neighbors);
+        // Replacement for Topology - assume all processes are neighbors
+        for (int j = 0; j < N; j++)
+            if (j != myId) neighbors.add(j);
         connector = new Connector();
-        connector.Connect(basename, myId, numProc, dataIn, dataOut);
+        connector.Connect(basename, myId, numProc, dataIn, dataOut, servers);
     }
     public void sendMsg(int destId, String tag, String msg) {
         //System.out.println("Sending msg to " + destId + ":" +tag + " " + msg);
@@ -42,7 +44,8 @@ public class Linker {
     public int getMyId() { return myId; }
     public int getNumProc() { return N; }
     public void close() {connector.closeSockets();}
-    public static void main(String[] args) throws Exception {
+    /*public static void main(String[] args) throws Exception {
         new Linker(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]));
-    }
+    }*/
 }
+

@@ -9,6 +9,7 @@ public class LibraryServer {
     private BookDatabase bookDatabase;
     private ServerList servers;
     private int myPort;
+    private LamportMutex lm;
 
     public LibraryServer(String[] splitConfigContents, int pid) {
         String[] universalServerConfigVars = splitConfigContents[0].split(" ");
@@ -17,7 +18,16 @@ public class LibraryServer {
         myId = pid;
         bookDatabase = new BookDatabase(numBooks);
 
-        // dc = new DirectClock(numProcs, pid);
+        Linker linker = null;
+        try {
+            linker = new Linker("libserve", myId, numServers, servers);
+            lm = new LamportMutex(linker);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Could not start linker");
+        }
+
+
 
         // find the correct localHost listener
         servers = new ServerList(splitConfigContents);

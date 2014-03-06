@@ -13,8 +13,7 @@ public class Connector {
     ServerSocket listener;
     Socket[] link;
     public void Connect(String basename, int myId, int numProc,
-                        BufferedReader[] dataIn, PrintWriter[] dataOut) throws Exception{
-        Name myNameclient = new Name();
+                        BufferedReader[] dataIn, PrintWriter[] dataOut, ServerList servers) throws Exception{
         link = new Socket[numProc];
         int localport = getLocalPort(myId);
         listener = new ServerSocket(localport);
@@ -38,12 +37,8 @@ public class Connector {
 
         // Contact all the bigger processes
         for(int i=myId+1; i < numProc; i++){
-            PortAddr addr;
-            do{
-                addr = myNameclient.searchName(basename + i);
-                Thread.sleep(100);
-            } while (addr.getportnum() == -1);
-            link[i] = new Socket(addr.gethostname(), addr.getportnum());
+            OtherServer os = servers.searchId(i); // TODO: What happens if the destination server is not found?  Can it be missing?
+            link[i] = new Socket(os.getAddress(), os.getPort());
             dataOut[i] = new PrintWriter(link[i].getOutputStream());
             dataIn[i] = new BufferedReader(new InputStreamReader(link[i].getInputStream()));
 

@@ -36,6 +36,14 @@ public class OtherServer {
         return this.port;
     }
 
+    public int getId() {
+        return this.id;
+    }
+
+    public InetAddress getAddress(){
+        return this.address;
+    }
+
     /**
      * Checks to see if a specific port is available.
      *
