@@ -15,7 +15,7 @@ public class Connector {
     public void Connect(String basename, int myId, int numProc,
                         BufferedReader[] dataIn, PrintWriter[] dataOut, ServerList servers) throws Exception{
         link = new Socket[numProc];
-        int localport = getLocalPort(myId);
+        int localport = getLocalPort(myId, servers);
         listener = new ServerSocket(localport);
 
         // Accept connections from all smaller processes
@@ -48,10 +48,10 @@ public class Connector {
         }
     }
 
-    int getLocalPort(int id){
+    int getLocalPort(int id, ServerList servers){
         // TODO: find what this should be
         //return Symbols.ServerPort + 10 + id;
-        return 0;
+        return servers.searchId(id).getPort();
     }
     public void closeSockets(){
         try {

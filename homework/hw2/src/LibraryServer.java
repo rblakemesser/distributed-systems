@@ -18,6 +18,11 @@ public class LibraryServer {
         myId = pid;
         bookDatabase = new BookDatabase(numBooks);
 
+
+        servers = new ServerList(splitConfigContents);
+        myPort = servers.getAvailableLocalPort();
+        System.out.println("LibraryServer: Found a port I can use: " + myPort);
+
         Linker linker = null;
         try {
             linker = new Linker("libserve", myId, numServers, servers);
@@ -30,9 +35,6 @@ public class LibraryServer {
 
 
         // find the correct localHost listener
-        servers = new ServerList(splitConfigContents);
-        myPort = servers.getAvailableLocalPort();
-        System.out.println("LibraryServer: Found a port I can use: " + myPort);
 
         // detect optional last line of server config
         if (splitConfigContents.length == 2 + numServers) {

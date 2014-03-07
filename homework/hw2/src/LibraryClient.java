@@ -9,6 +9,7 @@ public class LibraryClient {
     public LibraryClient(String[] splitConfigContents, int pid) {
         numServers = Integer.parseInt(splitConfigContents[0]);
         serverList = new ServerList(splitConfigContents);
+        // TODO: Process client commands
     }
 
     public void processInstructions(ArrayList<String[]> input) {
