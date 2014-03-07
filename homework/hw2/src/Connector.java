@@ -18,8 +18,10 @@ public class Connector {
         int localport = getLocalPort(myId, servers);
         listener = new ServerSocket(localport);
 
+        // TODO: need an independent list of ACTIVE processes - like the nameserver
+
         // Accept connections from all smaller processes
-        for(int i=0; i<myId; i++){
+        for(int i=1; i<myId; i++){
             Socket s = listener.accept();
             BufferedReader dIn = new BufferedReader(
                     new InputStreamReader(s.getInputStream()));
@@ -36,8 +38,13 @@ public class Connector {
         }
 
         // Contact all the bigger processes
-        for(int i=myId+1; i < numProc; i++){
+
+        // Maybe a good idea to iterate over all of the servers in the ServerList, rather than going by index
+        for(int i=myId+1; i <= numProc; i++){
             OtherServer os = servers.searchId(i); // TODO: What happens if the destination server is not found?  Can it be missing?
+            // ^^ this should retry until the other servers have started - do while loop with a pause: Thread.sleep(100)
+            // Should use the above-mentioned list of ACTIVE servers
+
             link[i] = new Socket(os.getAddress(), os.getPort());
             dataOut[i] = new PrintWriter(link[i].getOutputStream());
             dataIn[i] = new BufferedReader(new InputStreamReader(link[i].getInputStream()));
@@ -49,8 +56,6 @@ public class Connector {
     }
 
     int getLocalPort(int id, ServerList servers){
-        // TODO: find what this should be
-        //return Symbols.ServerPort + 10 + id;
         return servers.searchId(id).getPort();
     }
     public void closeSockets(){
