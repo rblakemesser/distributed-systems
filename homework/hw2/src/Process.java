@@ -47,7 +47,7 @@ public class Process implements MsgHandler {
             return comm.receiveMsg(fromId);
         } catch (IOException e) {
             System.out.println(e);
-            comm.close();
+            comm.closeSockets();
             return null;
         }
     }

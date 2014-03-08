@@ -23,9 +23,10 @@ public class LibraryServer {
 
         Linker linker = null;
         try {
-            linker = new Linker("libserve", myId, numServers, servers);
+            linker = new Linker("libserver", myId, numServers, servers);
             lm = new LamportMutex(linker);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             System.err.println("Could not start linker");
         }
