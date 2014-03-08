@@ -1,19 +1,17 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.StringTokenizer;
 
-/**
- * Created by douglasgunter on 3/2/14.
- */
 public class Connector {
     ServerSocket listener;
     Socket[] link;
     public void Connect(String basename, int myId, int numProc,
-                        BufferedReader[] dataIn, PrintWriter[] dataOut, ServerList servers) throws Exception{
+                        BufferedReader[] dataIn, PrintWriter[] dataOut,
+                        ServerList servers) throws Exception {
+
         link = new Socket[numProc];
         int localport = getLocalPort(myId, servers);
         listener = new ServerSocket(localport);
@@ -40,7 +38,7 @@ public class Connector {
         // Contact all the bigger processes
 
         // Maybe a good idea to iterate over all of the servers in the ServerList, rather than going by index
-        for(int i=myId+1; i <= numProc; i++){
+        for(int i=myId+1; i <= numProc; i++) {
             OtherServer os = servers.searchId(i); // TODO: What happens if the destination server is not found?  Can it be missing?
             // ^^ this should retry until the other servers have started - do while loop with a pause: Thread.sleep(100)
             // Should use the above-mentioned list of ACTIVE servers
@@ -61,7 +59,12 @@ public class Connector {
     public void closeSockets(){
         try {
             listener.close();
-            for(int i=0; i<link.length; i++) link[i].close();
-        }catch(Exception e) {System.err.println(e);}
+            for(int i=0; i<link.length; i++) {
+                link[i].close();
+            }
+        }
+        catch(Exception e) {
+            System.err.println(e);
+        }
     }
 }

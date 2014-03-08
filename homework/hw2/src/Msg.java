@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.StringTokenizer;
+
 public class Msg {
     int srcId, destId;
     String tag;
@@ -33,10 +34,9 @@ public class Msg {
         return new Msg(srcId, destId, tag, buf);
     }
     public String toString(){
-        String s = String.valueOf(srcId)+" " +
-                    String.valueOf(destId)+ " " +
-                    tag + " " + msgBuf + "#";
-        return s;
+        return String.valueOf(srcId)+" " +
+               String.valueOf(destId)+ " " +
+               tag + " " + msgBuf + "#";
     }
 }
 

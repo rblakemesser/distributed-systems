@@ -17,8 +17,6 @@ public class LibraryServer {
         int numBooks = Integer.parseInt(universalServerConfigVars[1]);
         myId = pid;
         bookDatabase = new BookDatabase(numBooks);
-
-
         servers = new ServerList(splitConfigContents);
         myPort = servers.getAvailableLocalPort();
         System.out.println("LibraryServer: Found a port I can use: " + myPort);
@@ -31,8 +29,6 @@ public class LibraryServer {
             e.printStackTrace();
             System.err.println("Could not start linker");
         }
-
-
 
         // find the correct localHost listener
 

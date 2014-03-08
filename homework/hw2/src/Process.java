@@ -1,11 +1,5 @@
-import com.sun.org.apache.xml.internal.serializer.utils.StringToIntTable;
+import java.io.IOException;
 
-import java.io.*;
-import java.lang.*;
-
-/**
- * Created by douglasgunter on 1/25/14.
- */
 public class Process implements MsgHandler {
     int N, myId;
     Linker comm;
@@ -61,6 +55,7 @@ public class Process implements MsgHandler {
     public synchronized void myWait(){
         try{
             wait();
-        }catch (InterruptedException e){ System.err.println(e); }
+        }
+        catch (InterruptedException e){ System.err.println(e); }
     }
 }

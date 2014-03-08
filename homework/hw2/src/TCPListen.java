@@ -1,7 +1,3 @@
-/**
- * Created by douglasgunter on 2/1/14.
- */
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;

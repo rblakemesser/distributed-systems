@@ -1,6 +1,3 @@
-/**
- * Created by douglasgunter on 1/22/14.
- */
 public class PortAddr {
     String hostname;
     int portnum;

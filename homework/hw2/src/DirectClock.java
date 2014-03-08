@@ -1,6 +1,3 @@
-/**
- * Created by douglasgunter on 2/20/14.
- */
 public class DirectClock {
     public int[] clock;
     int myId;

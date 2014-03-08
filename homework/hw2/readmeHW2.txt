@@ -1,6 +1,6 @@
 Server
 X     Read input file
-     Read standard input (?)
+X     Read standard input (?)
      Handle messages  (protected by Lamport’s mutex algorithm)
           Reserve
           Return

@@ -1,6 +1,3 @@
-/**
- * Created by douglasgunter on 3/2/14.
- */
 public class LamportMutex extends Process implements Lock{
     DirectClock v;
     int[] q;  // request queue

@@ -1,6 +1,3 @@
-/**
- * Created by douglasgunter on 1/23/14.
- */
 import java.util.LinkedList;
 public class IntLinkedList extends LinkedList {
     public void add(int i) {

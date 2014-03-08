@@ -1,5 +1,8 @@
-import java.util.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.StringTokenizer;
+
 public class Linker {
     PrintWriter[] dataOut;
     BufferedReader[] dataIn;
@@ -31,7 +34,7 @@ public class Linker {
             sendMsg(destIds.getEntry(i), tag, msg);
         }
     }
-    public Msg receiveMsg(int fromId) throws IOException  {
+    public Msg receiveMsg(int fromId) throws IOException {
         String getline = dataIn[fromId].readLine();
         //System.out.println(" received message " + getline);
         StringTokenizer st = new StringTokenizer(getline);

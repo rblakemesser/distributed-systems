@@ -51,12 +51,6 @@ public class ServerList {
     }
 
     public OtherServer searchId(int id){
-        for(OtherServer os : list){
-            if (os.getId() == id){
-                return os;
-            }
-        }
-        return null; // TODO: handle an "ID is not in the list" type error
+        return list.get(id-1);
     }
-
 }

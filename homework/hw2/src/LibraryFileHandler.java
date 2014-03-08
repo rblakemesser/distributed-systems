@@ -1,4 +1,12 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.Writer;
+
 
 public class LibraryFileHandler {
 
@@ -49,7 +57,7 @@ public class LibraryFileHandler {
             throw new IllegalArgumentException("File should not be null.");
         }
         if (!aFile.exists()) {
-            throw new FileNotFoundException ("File does not exist: " + aFile);
+            throw new FileNotFoundException("File does not exist: " + aFile);
         }
         if (!aFile.isFile()) {
             throw new IllegalArgumentException("Should not be a directory: " + aFile);
