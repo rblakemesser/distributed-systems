@@ -5,9 +5,9 @@ public class LamportMutex extends Process implements Lock {
 
     public LamportMutex(Linker initComm) {
         super(initComm);
-        v = new DirectClock(N, myId);
-        q = new int[N];
-        for(int j=0; j < N; j++){
+        v = new DirectClock(comm.numProc, comm.myId);
+        q = new int[comm.numProc];
+        for(int j=0; j < comm.numProc; j++){
             q[j] = -1;
         }
     }
@@ -15,8 +15,8 @@ public class LamportMutex extends Process implements Lock {
     @Override
     public synchronized void requestCS() {
         v.tick();
-        q[myId] = v.getValue(myId);
-        broadcastMsg("request", q[myId]);
+        q[comm.myId] = v.getValue(comm.myId);
+        broadcastMsg("request", q[comm.myId]);
         while(!okayCS()){
             myWait();
         }
@@ -24,15 +24,15 @@ public class LamportMutex extends Process implements Lock {
 
     @Override
     public synchronized void releaseCS() {
-        q[myId] = -1;
-        broadcastMsg("release", v.getValue(myId));
+        q[comm.myId] = -1;
+        broadcastMsg("release", v.getValue(comm.myId));
     }
 
     boolean okayCS() {
-        for(int j=0; j<N; j++){
-            if(isGreater(q[myId], myId, q[j], j))
+        for(int j=0; j<comm.numProc; j++){
+            if(isGreater(q[comm.myId], comm.myId, q[j], j))
                 return false;
-            if(isGreater(q[myId], myId, v.getValue(j), j))
+            if(isGreater(q[comm.myId], comm.myId, v.getValue(j), j))
                 return false;
         }
         return true;
@@ -50,7 +50,7 @@ public class LamportMutex extends Process implements Lock {
         v.receiveAction(src, timestamp);
         if(tag.equals("request")) {
             q[src] = timestamp;
-            sendMsg(src, "ack", v.getValue(myId));
+            sendMsg(src, "ack", v.getValue(comm.myId));
         }else if (tag.equals("release")){
             q[src] = -1;
         }

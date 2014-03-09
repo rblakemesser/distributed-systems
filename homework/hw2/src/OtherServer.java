@@ -2,14 +2,16 @@ import java.io.IOException;
 import java.net.*;
 
 public class OtherServer {
-    private InetAddress address;
-    private final int id;
-    private final int port;
-    private final boolean local;
+    public InetAddress address;
+    public final int id;
+    public final int idx;
+    public final int port;
+    public final boolean local;
     public boolean me = false;
 
     public OtherServer(int id, String configString) throws IllegalArgumentException {
         this.id = id;
+        this.idx = this.id - 1;
         String[] addressComponents = configString.split(":");
         if (!(addressComponents.length == 2)) {
             throw new IllegalArgumentException("No server on config line. Skipping: " + configString);
@@ -23,22 +25,6 @@ public class OtherServer {
         }
         port = Integer.parseInt(addressComponents[1]);
         local = this.address.getHostAddress().equals("127.0.0.1");
-    }
-
-    public boolean isLocal() {
-        return this.local;
-    }
-
-    public int getPort() {
-        return this.port;
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public InetAddress getAddress(){
-        return this.address;
     }
 
     /**

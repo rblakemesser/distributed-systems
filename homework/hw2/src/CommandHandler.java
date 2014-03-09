@@ -28,7 +28,7 @@ public class CommandHandler {
         }
     }
     public void synchServers(){
-        /* Synchronize the servers - make sure they all have up to date
+        /* Synchronize the allServers - make sure they all have up to date
            book lists, client lists, server lists
          */
     }

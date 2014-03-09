@@ -12,21 +12,21 @@ public class Linker {
     PrintWriter[] dataOut;
     BufferedReader[] dataIn;
     BufferedReader dIn;
-    ServerList servers;
-    private final int myId;
-    private final int numProc;
+    ServerList allServers;
+    public final int myId;
+    public final int numProc;
     public IntLinkedList neighbors = new IntLinkedList();
-    public Linker(String basename, int id, ServerList serverList) throws Exception {
+    public Linker(String basename, int id, ServerList serverList) throws IOException {
         myId = id;
-        servers = serverList;
+        allServers = serverList;
         numProc = serverList.getServerList().size();
         dataIn = new BufferedReader[numProc];
         dataOut = new PrintWriter[numProc];
 
         // Replacement for Topology - assume all processes are neighbors
         for (int j = 0; j < numProc; j++) {
-            if (j != myId) {
-                neighbors.add(j);
+            if (j+1 != myId) {
+                neighbors.add(j+1);
             }
         }
         link = new Socket[numProc];
@@ -54,13 +54,8 @@ public class Linker {
         String msg = st.nextToken("#");
         return new Msg(srcId, destId, tag, msg);
     }
-    public int getMyId() { return myId; }
-    public int getNumProc() { return numProc; }
-
     public void connect(String basename, BufferedReader[] dataIn, PrintWriter[] dataOut) throws IOException {
-        int localport = getLocalPort(myId, servers);
-        listener = new ServerSocket(localport);
-
+        listener = new ServerSocket(allServers.getServer(myId).port);
         // TODO: need an independent list of ACTIVE processes - like the nameserver
 
         // Accept connections from all smaller processes
@@ -76,37 +71,30 @@ public class Linker {
                 link[hisId] = s;
                 dataIn[hisId] = dIn;
                 dataOut[hisId] = new PrintWriter(s.getOutputStream());
+                System.out.println("message received from: " + hisId + " - " + dataIn[hisId] + " : " + dataOut[hisId]);
             }
         }
 
         // Contact all the bigger processes
-        for (OtherServer server : servers.getServerList()) {
-            // OtherServer os = servers.searchId(i); // TODO: What happens if the destination server is not found?  Can it be missing?
-            // ^^ this should retry until the other servers have started - do while loop with a pause: Thread.sleep(100)
-            // Should use the above-mentioned list of ACTIVE servers
-            int serverIndex = server.getId() - 1;
-            while (link[serverIndex] == null) {
+        for (OtherServer server : allServers.getServerList()) {
+            // Should use the above-mentioned list of ACTIVE allServers
+            while (link[server.idx] == null) try {
+                link[server.idx] = new Socket(server.address, server.port);
+            } catch (IOException e) {
+                System.out.println("Trying to connect connection to " + server.address + ":" + server.port); // e1.printStackTrace();
                 try {
-                    link[serverIndex] = new Socket(server.getAddress(), server.getPort());
-                }
-                catch(IOException e) {
-                    try {
-                        System.out.println("Trying to connect connection to " + server.getAddress() + ":" + server.getPort()); // e1.printStackTrace();
-                        Thread.sleep(250);
-                    } catch (InterruptedException ignore) {}
+                    Thread.sleep(250);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
                 }
             }
-            dataOut[serverIndex] = new PrintWriter(link[serverIndex].getOutputStream());
-            dataIn[serverIndex] = new BufferedReader(new InputStreamReader(link[serverIndex].getInputStream()));
+            dataOut[server.idx] = new PrintWriter(link[server.idx].getOutputStream());
+            dataIn[server.idx] = new BufferedReader(new InputStreamReader(link[server.idx].getInputStream()));
 
             // Send a hello message to P_i
-            dataOut[serverIndex].println(myId + " " + serverIndex + " " + "hello" + " " + "null");
-            dataOut[serverIndex].flush();
+            dataOut[server.idx].println(myId + " " + server.idx + " " + "hello" + " " + "null");
+            dataOut[server.idx].flush();
         }
-    }
-
-    int getLocalPort(int id, ServerList servers){
-        return servers.searchId(id).getPort();
     }
 
     public void closeSockets(){

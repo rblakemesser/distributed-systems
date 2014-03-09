@@ -1,13 +1,10 @@
 import java.io.IOException;
 
 public class Process implements MsgHandler {
-    int N, myId;
     Linker comm;
 
     public Process(Linker initComm) {
         comm = initComm;
-        myId = comm.getMyId();
-        N = comm.getNumProc();
     }
     public synchronized void handleMsg(Msg m, int src, String tag){}
     public void sendMsg(int destId, String tag, String msg){
@@ -24,14 +21,14 @@ public class Process implements MsgHandler {
         sendMsg(destId, tag, " 0 ");
     }
     public void broadcastMsg(String tag, int msg){
-        for(int i=0; i<N; i++){
-            if (i != myId){
+        for(int i=0; i < comm.numProc; i++){
+            if (i != comm.myId){
                 sendMsg(i, tag, msg);
             }
         }
     }
     public void sendToNeighbors(String tag, int msg){
-        for (int i=0; i<N;i++){
+        for (int i=0; i<comm.numProc;i++){
             if(isNeighbor(i)) sendMsg(i, tag, msg);
         }
     }

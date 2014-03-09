@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.io.IOException;
 
 public class ServerList {
     private final ArrayList<OtherServer> serverList;
@@ -10,7 +9,8 @@ public class ServerList {
             try {
                 this.serverList.add(new OtherServer(i, serverList[i]));
             }
-            catch (IllegalArgumentException ignored) {
+            catch (IllegalArgumentException e) {
+                System.out.println("line ignored by serverlist");
             }
         }
     }
@@ -30,16 +30,16 @@ public class ServerList {
     }
 
     /**
-     * Returns an available port from the serverList of local servers
+     * Returns an available port from the serverList of local allServers
      *
      */
     public int getAvailableLocalPort() {
         while (true) {
             for (OtherServer server : this.serverList) {
-                if (server.isLocal()) {
+                if (server.local) {
                     if (server.portAvailable()) {
                         server.me = true;
-                        return server.getPort();
+                        return server.port;
                     }
                 }
             }
@@ -50,7 +50,7 @@ public class ServerList {
         return serverList;
     }
 
-    public OtherServer searchId(int id){
+    public OtherServer getServer(int id){
         return serverList.get(id-1);
     }
 }

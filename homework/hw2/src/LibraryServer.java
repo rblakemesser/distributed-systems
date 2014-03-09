@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,7 +49,7 @@ public class LibraryServer {
             linker = new Linker("libserver", myId, servers);
             lm = new LamportMutex(linker);
         }
-        catch (Exception e) {
+        catch (IOException e) {
             System.err.println("Could not start linker");
             e.printStackTrace();
         }
