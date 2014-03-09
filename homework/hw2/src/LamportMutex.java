@@ -1,8 +1,9 @@
-public class LamportMutex extends Process implements Lock{
+
+public class LamportMutex extends Process implements Lock {
     DirectClock v;
     int[] q;  // request queue
 
-    public LamportMutex(Linker initComm){
+    public LamportMutex(Linker initComm) {
         super(initComm);
         v = new DirectClock(N, myId);
         q = new int[N];
@@ -10,6 +11,7 @@ public class LamportMutex extends Process implements Lock{
             q[j] = -1;
         }
     }
+
     @Override
     public synchronized void requestCS() {
         v.tick();
@@ -26,7 +28,7 @@ public class LamportMutex extends Process implements Lock{
         broadcastMsg("release", v.getValue(myId));
     }
 
-    boolean okayCS(){
+    boolean okayCS() {
         for(int j=0; j<N; j++){
             if(isGreater(q[myId], myId, q[j], j))
                 return false;
@@ -37,10 +39,10 @@ public class LamportMutex extends Process implements Lock{
     }
 
     boolean isGreater(int entry1, int pid1, int entry2, int pid2){
-        if(entry2 == -1)
+        if (entry2 == -1) {
             return false;
-        return ((entry1 > entry2)
-                || ((entry1 == entry2) && (pid1 > pid2)));
+        }
+        return ((entry1 > entry2) || ((entry1 == entry2) && (pid1 > pid2)));
     }
 
     public synchronized void handleMsg(Msg m, int src, String tag){

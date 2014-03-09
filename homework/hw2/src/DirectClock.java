@@ -1,19 +1,21 @@
 public class DirectClock {
     public int[] clock;
     int myId;
+    int myIndex;
     public DirectClock(int numProc, int id){
         myId = id;
+        myIndex = myId - 1;
         clock = new int[numProc];
-        for(int i=0;i<numProc;i++){
+        for(int i=0;i<numProc;i++) {
             clock[i] = 0;
         }
-        clock[myId] = 1;
+        clock[myIndex] = 1;
     }
     public int getValue(int i){
-        return clock[i];
+        return clock[myIndex];
     }
     public void tick(){
-        clock[myId]++;
+        clock[myIndex]++;
     }
     public void sendAction(){
         // sentValue = clock[myId];
@@ -21,7 +23,6 @@ public class DirectClock {
     }
     public void receiveAction(int sender, int sentValue){
         clock[sender] = Math.max(clock[sender], sentValue);
-        clock[myId] = Math.max(clock[myId], sentValue) + 1;
-
+        clock[myIndex] = Math.max(clock[myIndex], sentValue) + 1;
     }
 }

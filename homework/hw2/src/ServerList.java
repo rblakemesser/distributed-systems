@@ -1,23 +1,23 @@
 import java.util.ArrayList;
+import java.io.IOException;
 
 public class ServerList {
-    private final ArrayList<OtherServer> list;
+    private final ArrayList<OtherServer> serverList;
 
     public ServerList(String[] serverList) {
-        this.list = new ArrayList<OtherServer>();
+        this.serverList = new ArrayList<OtherServer>();
         for (int i=0; i < serverList.length; i++ ) {
             try {
-                this.list.add(new OtherServer(i, serverList[i]));
+                this.serverList.add(new OtherServer(i, serverList[i]));
             }
-            catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
+            catch (IllegalArgumentException ignored) {
             }
         }
     }
 
     public String clientQuery(String[] request) {
         while (true) {
-            for (OtherServer server : this.list) {
+            for (OtherServer server : this.serverList) {
                 // TODO: IMPLEMENT ME!
                 // if server can connect
                     // issue command to server
@@ -30,12 +30,12 @@ public class ServerList {
     }
 
     /**
-     * Returns an available port from the list of local servers
+     * Returns an available port from the serverList of local servers
      *
      */
     public int getAvailableLocalPort() {
         while (true) {
-            for (OtherServer server : this.list) {
+            for (OtherServer server : this.serverList) {
                 if (server.isLocal()) {
                     if (server.portAvailable()) {
                         server.me = true;
@@ -46,11 +46,11 @@ public class ServerList {
         }
     }
 
-    public ArrayList<OtherServer> getList(){
-        return list;
+    public ArrayList<OtherServer> getServerList(){
+        return serverList;
     }
 
     public OtherServer searchId(int id){
-        return list.get(id-1);
+        return serverList.get(id-1);
     }
 }

@@ -1,8 +1,5 @@
 import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.UnknownHostException;
+import java.net.*;
 
 public class OtherServer {
     private InetAddress address;
@@ -24,8 +21,8 @@ public class OtherServer {
             address = null;
             System.out.println("OtherServer: UnknownHostException");
         }
-        this.port = Integer.parseInt(addressComponents[1]);
-        this.local = this.address.getHostAddress().equals("127.0.0.1");
+        port = Integer.parseInt(addressComponents[1]);
+        local = this.address.getHostAddress().equals("127.0.0.1");
     }
 
     public boolean isLocal() {
@@ -59,7 +56,7 @@ public class OtherServer {
             return true;
         }
         catch (IOException e) {
-            System.out.println("IOEXCEPTION!");
+            System.out.println("Port was not available: " + port);
         }
         finally {
             if (ds != null) {

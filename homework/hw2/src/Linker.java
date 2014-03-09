@@ -12,17 +12,25 @@ public class Linker {
     PrintWriter[] dataOut;
     BufferedReader[] dataIn;
     BufferedReader dIn;
-    int myId, N;
+    ServerList servers;
+    private final int myId;
+    private final int numProc;
     public IntLinkedList neighbors = new IntLinkedList();
-    public Linker(String basename, int id, int numProc, ServerList servers) throws Exception {
+    public Linker(String basename, int id, ServerList serverList) throws Exception {
         myId = id;
-        N = numProc;
+        servers = serverList;
+        numProc = serverList.getServerList().size();
         dataIn = new BufferedReader[numProc];
         dataOut = new PrintWriter[numProc];
+
         // Replacement for Topology - assume all processes are neighbors
-        for (int j = 0; j < N; j++)
-            if (j != myId) neighbors.add(j);
-        connect(basename, myId, numProc, dataIn, dataOut, servers);
+        for (int j = 0; j < numProc; j++) {
+            if (j != myId) {
+                neighbors.add(j);
+            }
+        }
+        link = new Socket[numProc];
+        connect(basename, dataIn, dataOut);
     }
     public void sendMsg(int destId, String tag, String msg) {
         dataOut[destId].println(myId + " " + destId + " " + tag + " " + msg + "#");
@@ -47,23 +55,18 @@ public class Linker {
         return new Msg(srcId, destId, tag, msg);
     }
     public int getMyId() { return myId; }
-    public int getNumProc() { return N; }
+    public int getNumProc() { return numProc; }
 
-    public void connect(String basename, int myId, int numProc,
-                        BufferedReader[] dataIn, PrintWriter[] dataOut,
-                        ServerList servers) throws Exception {
-
-        link = new Socket[numProc];
+    public void connect(String basename, BufferedReader[] dataIn, PrintWriter[] dataOut) throws IOException {
         int localport = getLocalPort(myId, servers);
         listener = new ServerSocket(localport);
 
         // TODO: need an independent list of ACTIVE processes - like the nameserver
 
         // Accept connections from all smaller processes
-        for(int i=1; i<myId; i++){
+        for(int i=1; i <= myId; i++){
             Socket s = listener.accept();
-            BufferedReader dIn = new BufferedReader(
-                    new InputStreamReader(s.getInputStream()));
+            BufferedReader dIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
             String getline = dIn.readLine();
             StringTokenizer st = new StringTokenizer(getline);
             int hisId = Integer.parseInt(st.nextToken());
@@ -77,18 +80,28 @@ public class Linker {
         }
 
         // Contact all the bigger processes
-        for (int i=myId; i < numProc; i++) {
-            OtherServer os = servers.searchId(i); // TODO: What happens if the destination server is not found?  Can it be missing?
+        for (OtherServer server : servers.getServerList()) {
+            // OtherServer os = servers.searchId(i); // TODO: What happens if the destination server is not found?  Can it be missing?
             // ^^ this should retry until the other servers have started - do while loop with a pause: Thread.sleep(100)
             // Should use the above-mentioned list of ACTIVE servers
-
-            link[i] = new Socket(os.getAddress(), os.getPort());
-            dataOut[i] = new PrintWriter(link[i].getOutputStream());
-            dataIn[i] = new BufferedReader(new InputStreamReader(link[i].getInputStream()));
+            int serverIndex = server.getId() - 1;
+            while (link[serverIndex] == null) {
+                try {
+                    link[serverIndex] = new Socket(server.getAddress(), server.getPort());
+                }
+                catch(IOException e) {
+                    try {
+                        System.out.println("Trying to connect connection to " + server.getAddress() + ":" + server.getPort()); // e1.printStackTrace();
+                        Thread.sleep(250);
+                    } catch (InterruptedException ignore) {}
+                }
+            }
+            dataOut[serverIndex] = new PrintWriter(link[serverIndex].getOutputStream());
+            dataIn[serverIndex] = new BufferedReader(new InputStreamReader(link[serverIndex].getInputStream()));
 
             // Send a hello message to P_i
-            dataOut[i].println(myId + " " + i + " " + "hello" + " " + "null");
-            dataOut[i].flush();
+            dataOut[serverIndex].println(myId + " " + serverIndex + " " + "hello" + " " + "null");
+            dataOut[serverIndex].flush();
         }
     }
 
@@ -107,5 +120,5 @@ public class Linker {
             System.err.println(e);
         }
     }
-}
 
+}

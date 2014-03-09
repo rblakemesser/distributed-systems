@@ -10,6 +10,7 @@ public class LibraryServer {
     private ServerList servers;
     private int myPort;
     private LamportMutex lm;
+    Linker linker;
 
     public LibraryServer(String[] splitConfigContents, int pid) {
         String[] universalServerConfigVars = splitConfigContents[0].split(" ");
@@ -18,20 +19,10 @@ public class LibraryServer {
         myId = pid;
         bookDatabase = new BookDatabase(numBooks);
         servers = new ServerList(splitConfigContents);
-        myPort = servers.getAvailableLocalPort();
-        System.out.println("LibraryServer: Found a port I can use: " + myPort);
-
-        Linker linker = null;
-        try {
-            linker = new Linker("libserver", myId, numServers, servers);
-            lm = new LamportMutex(linker);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Could not start linker");
-        }
 
         // find the correct localHost listener
+        myPort = servers.getAvailableLocalPort();
+        System.out.println("LibraryServer: Found a port I can use: " + myPort);
 
         // detect optional last line of server config
         if (splitConfigContents.length == 2 + numServers) {
@@ -53,5 +44,14 @@ public class LibraryServer {
             killCounter = Integer.parseInt(localServerConfigVars[1]);
             timeToWait = Integer.parseInt(localServerConfigVars[2]);
         }
+        try {
+            linker = new Linker("libserver", myId, servers);
+            lm = new LamportMutex(linker);
+        }
+        catch (Exception e) {
+            System.err.println("Could not start linker");
+            e.printStackTrace();
+        }
+
     }
 }

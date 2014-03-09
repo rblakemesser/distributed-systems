@@ -32,7 +32,8 @@ public class TCPListen extends Thread {
                     String response = ch.handleCommand(clientCommand);
 
                     clientReply.writeBytes(response + "\n");
-                }catch (SocketException se){
+                }
+                catch (SocketException se){
                     System.err.println(se);
                 }
 
