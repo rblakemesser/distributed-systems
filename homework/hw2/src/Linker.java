@@ -12,10 +12,12 @@ public class Linker {
     BufferedReader dIn;
     ServerList allServers;
     public final int myId;
+    public final int myIdx;
     public final int numProc;
     public IntLinkedList neighbors = new IntLinkedList();
     public Linker(String basename, int id, ServerList serverList) throws IOException {
         myId = id;
+        myIdx = id - 1;
         allServers = serverList;
         numProc = serverList.getServerList().size();
         dataIn = new BufferedReader[numProc];

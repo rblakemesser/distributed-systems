@@ -35,21 +35,21 @@ public class CommandHandler {
          */
     }
 
-    public String handleCommand(String clientCommand){
+    public synchronized String handleCommand(String clientCommand){
         String response;
         String[] splitCommand = clientCommand.split(" ");
         if (splitCommand.length == 3) { // client command
             while (this.lamportMutex == null) {
-                System.out.println("CommandHandler: Waiting for mutex before processing client command.");
+                System.out.println("CommandHandler: Waiting for mutex to init before processing client command.");
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(20);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
 
-            int clientId = Integer.parseInt(splitCommand[0]);
-            int bookNum = Integer.parseInt(splitCommand[1]);
+            int clientId = Integer.parseInt(splitCommand[0].replace("c", ""));
+            int bookNum = Integer.parseInt(splitCommand[1].replace("b", ""));
             String command = splitCommand[2];
             lamportMutex.requestCS();
             if (command.equals("reserve")){
@@ -63,6 +63,7 @@ public class CommandHandler {
             else {
                 response = "Error";
             }
+            lamportMutex.releaseCS();
         }
         else { // must be server command
             if (splitCommand[0].equals("initConnection")) {

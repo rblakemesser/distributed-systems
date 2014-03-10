@@ -22,7 +22,7 @@ public class Process implements MsgHandler {
     }
     public void broadcastMsg(String tag, int msg){
         for(int i=0; i < comm.numProc; i++){
-            if (i != comm.myId){
+            if (i != comm.myIdx){
                 sendMsg(i, tag, msg);
             }
         }

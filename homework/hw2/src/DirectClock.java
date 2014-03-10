@@ -2,9 +2,9 @@ public class DirectClock {
     public int[] clock;
     int myId;
     int myIndex;
-    public DirectClock(int numProc, int id){
-        myId = id;
-        myIndex = myId - 1;
+    public DirectClock(int numProc, int idx) {
+        myIndex = idx;
+        myId = myIndex + 1;
         clock = new int[numProc];
         for(int i=0;i<numProc;i++) {
             clock[i] = 0;
