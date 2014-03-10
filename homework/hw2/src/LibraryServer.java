@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +12,8 @@ public class LibraryServer {
     private ServerList servers;
     private int myPort;
     private LamportMutex lm;
+    private TCPListen listener;
+    private CommandHandler commandHandler;
     Linker linker;
 
     public LibraryServer(String[] splitConfigContents, int pid) {
@@ -19,11 +22,17 @@ public class LibraryServer {
         int numBooks = Integer.parseInt(universalServerConfigVars[1]);
         myId = pid;
         bookDatabase = new BookDatabase(numBooks);
-        servers = new ServerList(splitConfigContents);
+        ArrayList<String> serverLines = new ArrayList<String>();
+        for (String configLine : splitConfigContents) {
+            if (configLine.split(":").length == 2){
+                serverLines.add(configLine);
+            }
+        }
+        servers = new ServerList(serverLines);
 
         // find the correct localHost listener
-        myPort = servers.getAvailableLocalPort();
-        System.out.println("LibraryServer: Found a port I can use: " + myPort);
+        myPort = servers.getServer(pid).port;
+        System.out.println("My port is: " + myPort);
 
         // detect optional last line of server config
         if (splitConfigContents.length == 2 + numServers) {
@@ -45,8 +54,13 @@ public class LibraryServer {
             killCounter = Integer.parseInt(localServerConfigVars[1]);
             timeToWait = Integer.parseInt(localServerConfigVars[2]);
         }
+
+        commandHandler = new CommandHandler(bookDatabase);
+        listener = new TCPListen(myPort, commandHandler);
+        listener.start();
+
         try {
-            linker = new Linker("libserver", myId, servers);
+            linker = new Linker("libserver", myId, servers, listener);
             lm = new LamportMutex(linker);
         }
         catch (IOException e) {

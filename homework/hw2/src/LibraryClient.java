@@ -12,11 +12,20 @@ public class LibraryClient {
 
     public LibraryClient(String[] splitConfigContents, int pid) {
         numServers = Integer.parseInt(splitConfigContents[0]);
-        serverList = new ServerList(splitConfigContents);
         myId = pid;
-
+        
         String[] instructions = Arrays.copyOfRange(splitConfigContents, numServers+1, splitConfigContents.length);
+
+        ArrayList<String> serverLines = new ArrayList<String>();
+        for (String configLine : splitConfigContents) {
+            if (configLine.split(":").length == 2){
+                serverLines.add(configLine);
+            }
+        }
+        serverList = new ServerList(serverLines);
+        // TODO: Process client commands
         processInstructions(instructions);
+
     }
 
     public void processInstructions(String[] input) {

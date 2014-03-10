@@ -3,17 +3,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ServerList {
-    private final ArrayList<OtherServer> serverList;
+    public final ArrayList<OtherServer> serverList;
 
-    public ServerList(String[] serverList) {
+    public ServerList(ArrayList<String> serverConfigLines) {
         this.serverList = new ArrayList<OtherServer>();
-        for (int i=0; i < serverList.length; i++ ) {
-            try {
-                this.serverList.add(new OtherServer(i, serverList[i]));
-            }
-            catch (IllegalArgumentException e) {
-                System.out.println("line ignored by serverlist");
-            }
+        for (int i=0; i < serverConfigLines.size(); i++) {
+            this.serverList.add(new OtherServer(i, serverConfigLines.get(i)));
         }
     }
 

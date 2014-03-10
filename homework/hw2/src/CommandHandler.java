@@ -1,26 +1,27 @@
+import java.util.Arrays;
 
 public class CommandHandler {
-    private int[] bookList;
+    private BookDatabase bookDb;
 
-    public CommandHandler(int[] bookList) {
-        this.bookList = bookList;
+    public CommandHandler(BookDatabase bookDb) {
+        this.bookDb = bookDb;
     }
 
     public String reserveBook(int clientNum, int bookNum){
-        if (bookNum > bookList.length ||
-                bookNum < 1 ||
-                bookList[bookNum-1] != 0){
+        // bookStatus = 0 means book is not checked out
+        if (bookNum > bookDb.bookStatuses.size() || bookNum < 1 || bookDb.bookStatuses.get(bookNum - 1) != 0){
             return "fail " + clientNum + " " + bookNum;
-        }else if (bookList[bookNum-1] == 0){
-            bookList[bookNum-1] = clientNum;
+        }
+        else if (bookDb.bookStatuses.get(bookNum-1) == 0){
+            bookDb.bookStatuses.set(bookNum-1, clientNum);
             return clientNum + " " + bookNum;
         }
         return "fail " + clientNum + " " + bookNum;
     }
 
-    public String returnBook(int clientNum, int bookNum){
-        if (bookList[bookNum-1] == clientNum){
-            bookList[bookNum-1] = 0;
+    public String returnBook(int clientNum, int bookNum) {
+        if (bookDb.bookStatuses.get(bookNum-1) == clientNum) {
+            bookDb.bookStatuses.set(bookNum-1, 0);
             return "free " + clientNum + " " + bookNum;
         }
         else {
@@ -36,20 +37,26 @@ public class CommandHandler {
     public String handleCommand(String clientCommand){
         String response;
         String[] splitCommand = clientCommand.split(" ");
-        int clientId = Integer.parseInt(splitCommand[0]);
-        int bookNum = Integer.parseInt(splitCommand[1]);
-        String command = splitCommand[2];
+        if (splitCommand.length == 3) { // client command
+            int clientId = Integer.parseInt(splitCommand[0]);
+            int bookNum = Integer.parseInt(splitCommand[1]);
+            String command = splitCommand[2];
 
-        if (command.equals("reserve")){
-            // run reserveBook
-            response = reserveBook(clientId, bookNum);
+            if (command.equals("reserve")){
+                // run reserveBook
+                response = reserveBook(clientId, bookNum);
+            }
+            else if (command.equals("return")){
+                // run returnBook
+                response = returnBook(clientId, bookNum);
+            }
+            else {
+                response = "Error";
+            }
         }
-        else if (command.equals("return")){
-            // run returnBook
-            response = returnBook(clientId, bookNum);
-        }
-        else {
-            response = "Error";
+        else { // must be server command
+            System.out.println(Arrays.toString(splitCommand));
+            response = "ok";
         }
         return response;
     }
