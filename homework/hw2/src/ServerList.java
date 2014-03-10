@@ -1,3 +1,8 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class ServerList {
@@ -13,6 +18,7 @@ public class ServerList {
     public String clientQuery(String[] request) {
         while (true) {
             for (OtherServer server : this.serverList) {
+
                 // TODO: IMPLEMENT ME!
                 // if server can connect
                     // issue command to server
@@ -20,6 +26,26 @@ public class ServerList {
                     // return response
                 // if no response before timeout
                     // stop listening for response and continue the loop
+                try {
+                    Socket connectionToServer = new Socket(server.address, server.port);
+                    PrintWriter dataOut = new PrintWriter(connectionToServer.getOutputStream());
+                    BufferedReader dataIn = new BufferedReader(new InputStreamReader(connectionToServer.getInputStream()));
+                    dataOut.println(request[0] + " " + request[1] + " " + request[2]);
+                    dataOut.flush();
+
+                    // Wait for a reply for <timeout>
+                    // Loop for <timeout> time - check to see if dataIn is not null.  If it's NOT null, return the value
+                    // and you're done with this loop
+
+                } catch (IOException e) {
+                    System.out.println("Trying to connect connection to " + server.address + ":" + server.port); // e1.printStackTrace();
+                    try {
+                        Thread.sleep(250);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+
             }
         }
     }
