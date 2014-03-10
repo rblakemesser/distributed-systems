@@ -2,6 +2,7 @@ import java.util.Arrays;
 
 public class CommandHandler {
     private BookDatabase bookDb;
+    private LamportMutex lamportMutex;
 
     public CommandHandler(BookDatabase bookDb) {
         this.bookDb = bookDb;
@@ -38,10 +39,19 @@ public class CommandHandler {
         String response;
         String[] splitCommand = clientCommand.split(" ");
         if (splitCommand.length == 3) { // client command
+            while (this.lamportMutex == null) {
+                System.out.println("CommandHandler: Waiting for mutex before processing client command.");
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
             int clientId = Integer.parseInt(splitCommand[0]);
             int bookNum = Integer.parseInt(splitCommand[1]);
             String command = splitCommand[2];
-
+            lamportMutex.requestCS();
             if (command.equals("reserve")){
                 // run reserveBook
                 response = reserveBook(clientId, bookNum);
@@ -55,9 +65,19 @@ public class CommandHandler {
             }
         }
         else { // must be server command
-            System.out.println(Arrays.toString(splitCommand));
-            response = "ok";
+            if (splitCommand[0].equals("initConnection")) {
+                System.out.println("initial connection: " + Arrays.toString(splitCommand));
+                response = "ok";
+            }
+            else {
+                System.out.println("new server communication" + Arrays.toString(splitCommand));
+                response = "okayyy";
+            }
         }
         return response;
+    }
+
+    public void registerMutex(LamportMutex mutex) {
+        this.lamportMutex = mutex;
     }
 }

@@ -60,8 +60,8 @@ public class LibraryServer {
         listener.start();
 
         try {
-            linker = new Linker("libserver", myId, servers, listener);
-            lm = new LamportMutex(linker);
+            linker = new Linker("libserver", myId, servers);
+            lm = new LamportMutex(linker, commandHandler);
         }
         catch (IOException e) {
             System.err.println("Could not start linker");

@@ -2,12 +2,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.StringTokenizer;
 
 public class Linker {
-    ServerSocket listener;
     Socket[] link;
     PrintWriter[] dataOut;
     BufferedReader[] dataIn;
@@ -16,7 +14,7 @@ public class Linker {
     public final int myId;
     public final int numProc;
     public IntLinkedList neighbors = new IntLinkedList();
-    public Linker(String basename, int id, ServerList serverList, TCPListen listener) throws IOException {
+    public Linker(String basename, int id, ServerList serverList) throws IOException {
         myId = id;
         allServers = serverList;
         numProc = serverList.getServerList().size();
@@ -64,7 +62,7 @@ public class Linker {
                 }
                 catch (IOException e) {
                     try {
-                        System.out.println("Sleeping"); // e1.printStackTrace();
+                        System.out.println("Waiting for server " + server.id + " to initialize."); // e1.printStackTrace();
                         Thread.sleep(250);
                     }
                     catch (InterruptedException e1) {
@@ -75,7 +73,7 @@ public class Linker {
                 dataIn[server.idx] = new BufferedReader(new InputStreamReader(link[server.idx].getInputStream()));
 
                 // Send a hello message to P_i
-                dataOut[server.idx].println(myId + " " + server.id + " " + "hello" + " " + "null");
+                dataOut[server.idx].println("initConnection " + myId + " " + server.id + " " + "hello" + " " + "null");
                 dataOut[server.idx].flush();
             }
         }
@@ -83,7 +81,6 @@ public class Linker {
 
     public void closeSockets(){
         try {
-            listener.close();
             for(Socket sock : link) {
                 sock.close();
             }

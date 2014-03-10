@@ -3,13 +3,14 @@ public class LamportMutex extends Process implements Lock {
     DirectClock v;
     int[] q;  // request queue
 
-    public LamportMutex(Linker initComm) {
+    public LamportMutex(Linker initComm, CommandHandler commandHandler) {
         super(initComm);
         v = new DirectClock(comm.numProc, comm.myId);
         q = new int[comm.numProc];
         for(int j=0; j < comm.numProc; j++){
             q[j] = -1;
         }
+        commandHandler.registerMutex(this);
     }
 
     @Override
