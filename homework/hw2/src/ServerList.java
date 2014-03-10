@@ -1,3 +1,5 @@
+import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class ServerList {
@@ -18,6 +20,7 @@ public class ServerList {
     public String clientQuery(String[] request) {
         while (true) {
             for (OtherServer server : this.serverList) {
+
                 // TODO: IMPLEMENT ME!
                 // if server can connect
                     // issue command to server
@@ -25,6 +28,18 @@ public class ServerList {
                     // return response
                 // if no response before timeout
                     // stop listening for response and continue the loop
+
+                try {
+                    Socket connectToServer = new Socket(server.address, server.port);
+                } catch (IOException e) {
+                    System.out.println("Trying to connect connection to " + server.address + ":" + server.port); // e1.printStackTrace();
+                    try {
+                        Thread.sleep(250);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+
             }
         }
     }
