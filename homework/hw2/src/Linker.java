@@ -16,7 +16,7 @@ public class Linker {
     public final int myId;
     public final int numProc;
     public IntLinkedList neighbors = new IntLinkedList();
-    public Linker(String basename, int id, ServerList serverList) throws IOException {
+    public Linker(String basename, int id, ServerList serverList, TCPListen listener) throws IOException {
         myId = id;
         allServers = serverList;
         numProc = serverList.getServerList().size();
@@ -55,45 +55,29 @@ public class Linker {
         return new Msg(srcId, destId, tag, msg);
     }
     public void connect(String basename, BufferedReader[] dataIn, PrintWriter[] dataOut) throws IOException {
-        listener = new ServerSocket(allServers.getServer(myId).port);
-        // TODO: need an independent list of ACTIVE processes - like the nameserver
-
-        // Accept connections from all smaller processes
-        for(int i=1; i <= myId; i++){
-            Socket s = listener.accept();
-            BufferedReader dIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            String getline = dIn.readLine();
-            StringTokenizer st = new StringTokenizer(getline);
-            int hisId = Integer.parseInt(st.nextToken());
-            int destId = Integer.parseInt(st.nextToken());
-            String tag = st.nextToken();
-            if (tag.equals("hello")){
-                link[hisId] = s;
-                dataIn[hisId] = dIn;
-                dataOut[hisId] = new PrintWriter(s.getOutputStream());
-                System.out.println("message received from: " + hisId + " - " + dataIn[hisId] + " : " + dataOut[hisId]);
-            }
-        }
-
         // Contact all the bigger processes
-        for (OtherServer server : allServers.getServerList()) {
-            // Should use the above-mentioned list of ACTIVE allServers
-            while (link[server.idx] == null) try {
-                link[server.idx] = new Socket(server.address, server.port);
-            } catch (IOException e) {
-                System.out.println("Trying to connect connection to " + server.address + ":" + server.port); // e1.printStackTrace();
-                try {
-                    Thread.sleep(250);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+        for (OtherServer server : allServers.serverList) {
+            if (server.id != myId) {
+                System.out.println("Trying to connect to " + server.address + ":" + server.port); // e1.printStackTrace();
+                while (link[server.idx] == null) try {
+                    link[server.idx] = new Socket(server.address, server.port);
                 }
-            }
-            dataOut[server.idx] = new PrintWriter(link[server.idx].getOutputStream());
-            dataIn[server.idx] = new BufferedReader(new InputStreamReader(link[server.idx].getInputStream()));
+                catch (IOException e) {
+                    try {
+                        System.out.println("Sleeping"); // e1.printStackTrace();
+                        Thread.sleep(250);
+                    }
+                    catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+                dataOut[server.idx] = new PrintWriter(link[server.idx].getOutputStream());
+                dataIn[server.idx] = new BufferedReader(new InputStreamReader(link[server.idx].getInputStream()));
 
-            // Send a hello message to P_i
-            dataOut[server.idx].println(myId + " " + server.idx + " " + "hello" + " " + "null");
-            dataOut[server.idx].flush();
+                // Send a hello message to P_i
+                dataOut[server.idx].println(myId + " " + server.id + " " + "hello" + " " + "null");
+                dataOut[server.idx].flush();
+            }
         }
     }
 

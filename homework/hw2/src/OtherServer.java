@@ -3,19 +3,16 @@ import java.net.*;
 
 public class OtherServer {
     public InetAddress address;
-    public final int id;
-    public final int idx;
+    public int id;
+    public int idx;
     public final int port;
     public final boolean local;
     public boolean me = false;
 
-    public OtherServer(int id, String configString) throws IllegalArgumentException {
-        this.id = id;
-        this.idx = this.id - 1;
+    public OtherServer(int idx, String configString) {
+        this.idx = idx;
+        this.id = this.idx + 1;
         String[] addressComponents = configString.split(":");
-        if (!(addressComponents.length == 2)) {
-            throw new IllegalArgumentException("No server on config line. Skipping: " + configString);
-        }
         try {
             address = InetAddress.getByName(addressComponents[0]);
         }

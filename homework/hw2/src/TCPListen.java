@@ -19,7 +19,7 @@ public class TCPListen extends Thread {
     public void run() {
         try {
             ServerSocket tcpSocket = new ServerSocket(port);
-            while(true){
+            while(true) {
                 try {
                     Socket connectionSocket = tcpSocket.accept();
 
@@ -30,7 +30,6 @@ public class TCPListen extends Thread {
                         capture the reply from the server in response
                     */
                     String response = ch.handleCommand(clientCommand);
-
                     clientReply.writeBytes(response + "\n");
                 }
                 catch (SocketException se){
@@ -38,8 +37,9 @@ public class TCPListen extends Thread {
                 }
 
             }
-        } catch (IOException e) {
-                e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
