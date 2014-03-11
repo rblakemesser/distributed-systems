@@ -41,7 +41,7 @@ public class ServerList {
                     // Loop for <timeout> time - check to see if we have something from dataIn
 
                 } catch (IOException e) {
-                    System.out.println("Trying to connect connection to " + server.address + ":" + server.port); // e1.printStackTrace();
+                    System.out.println("Trying to connection to " + server.address + ":" + server.port); // e1.printStackTrace();
                     try {
                         Thread.sleep(250);
                     } catch (InterruptedException e1) {
