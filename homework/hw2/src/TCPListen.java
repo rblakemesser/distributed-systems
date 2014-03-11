@@ -1,3 +1,5 @@
+import sun.plugin2.message.Message;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -8,17 +10,18 @@ import java.net.SocketException;
 
 public class TCPListen extends Thread {
     int port;
-    CommandHandler ch;
     int killCounter;
     int timeToWait;
-    int currentMessageNumber;
+    public int currentMessageNumber;
+    private final MessageProcessor messageProcessor;
 
     public TCPListen(int port, CommandHandler ch, int killCounter, int timeToWait) {
-        this.ch = ch;
         this.port = port;
         this.killCounter = killCounter;
         this.timeToWait = timeToWait;
         this.currentMessageNumber = 0;
+        this.messageProcessor = new MessageProcessor(ch);
+        messageProcessor.start();
     }
 
     @Override
@@ -45,8 +48,9 @@ public class TCPListen extends Thread {
                         }
                     }
                     else {
-                        String response = ch.handleCommand(clientCommand);
-                        clientReply.writeBytes(response + "\n");
+                        messageProcessor.addMessage(clientCommand, clientReply);
+                        //String response = ch.handleCommand(clientCommand, clientReply);
+                        //clientReply.writeBytes(response + "\n");
                     }
                 }
                 catch (SocketException se){

@@ -11,13 +11,13 @@ public class Process implements MsgHandler {
         comm.sendMsg(destId,tag,msg);
     }
     public void sendMsg(int destId, String tag, int msg){
-        sendMsg(destId, tag, String.valueOf(msg));
+        comm.sendMsg(destId, tag, String.valueOf(msg));
     }
     public void sendMsg(int destId, String tag, int msg1, int msg2){
-        sendMsg(destId, tag, String.valueOf(msg1) + " " + String.valueOf(msg2) + " ");
+        comm.sendMsg(destId, tag, String.valueOf(msg1) + " " + String.valueOf(msg2) + " ");
     }
     public void sendMsg(int destId, String tag){
-        sendMsg(destId, tag, " 0 ");
+        comm.sendMsg(destId, tag, " 0 ");
     }
     public void broadcastMsg(String tag, int msg){
         for(int i=0; i < comm.numProc; i++){
@@ -36,9 +36,9 @@ public class Process implements MsgHandler {
         return comm.neighbors.contains(i);
     }
 
-
     @Override
     public Msg receiveMsg(int fromId) {
+        System.out.println("Process: message received");
         try {
             return comm.receiveMsg(fromId);
         } catch (IOException e) {

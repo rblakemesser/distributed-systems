@@ -34,7 +34,7 @@ public class Linker {
     }
     public void sendMsg(int destId, String tag, String msg) {
         dataOut[destId].println(myId + " " + destId + " " + tag + " " + msg + "#");
-        System.out.println("Linker: " + myIdx + " " + destId + " " + tag + " " + msg + "#");
+        System.out.println("Linker sending message: " + myIdx + " " + destId + " " + tag + " " + msg + "#");
         dataOut[destId].flush();
     }
     public void sendMsg(int destId, String tag) {
@@ -47,7 +47,7 @@ public class Linker {
     }
     public Msg receiveMsg(int fromId) throws IOException {
         String getline = dataIn[fromId].readLine();
-        //System.out.println(" received message " + getline);
+        System.out.println("Linker: received message: " + getline);
         StringTokenizer st = new StringTokenizer(getline);
         int srcId = Integer.parseInt(st.nextToken());
         int destId = Integer.parseInt(st.nextToken());
@@ -76,7 +76,7 @@ public class Linker {
                 dataIn[server.idx] = new BufferedReader(new InputStreamReader(link[server.idx].getInputStream()));
 
                 // Send a hello message to P_i
-                dataOut[server.idx].println("initConnection " + myId + " " + server.id + " " + "hello" + " " + "null");
+                dataOut[server.idx].println("initConnection " + myIdx + " " + server.idx + " " + "hello" + " " + "null");
                 dataOut[server.idx].flush();
             }
         }

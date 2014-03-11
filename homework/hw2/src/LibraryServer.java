@@ -31,6 +31,7 @@ public class LibraryServer {
         servers = new ServerList(serverLines);
         // find the correct localHost listener
         myPort = servers.getServer(pid).port;
+        servers.getServer(pid).me = true;
         System.out.println("My port is: " + myPort);
 
         // detect optional last line of server config

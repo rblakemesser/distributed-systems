@@ -1,4 +1,3 @@
-
 public class LamportMutex extends Process implements Lock {
     DirectClock v;
     int[] q;  // request queue
@@ -47,6 +46,7 @@ public class LamportMutex extends Process implements Lock {
     }
 
     public synchronized void handleMsg(Msg m, int src, String tag){
+        System.out.println("LamportMutex: message received");
         int timestamp = m.getMessageInt();
         v.receiveAction(src, timestamp);
         if(tag.equals("request")) {

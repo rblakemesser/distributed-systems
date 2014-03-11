@@ -29,15 +29,17 @@ public class CommandHandler {
             return "fail " + clientNum + " " + bookNum;
         }
     }
+
     public void synchServers(){
         /* Synchronize the allServers - make sure they all have up to date
            book lists, client lists, server lists
          */
     }
 
-    public synchronized String handleCommand(String clientCommand){
+    public synchronized String handleCommand(String msg){
+        System.out.println("CommandHandler: received communication: " + msg);
         String response;
-        String[] splitCommand = clientCommand.split(" ");
+        String[] splitCommand = msg.split(" ");
         if (splitCommand.length == 3) { // client command
             while (this.lamportMutex == null) {
                 System.out.println("CommandHandler: Waiting for mutex to init before processing client command.");

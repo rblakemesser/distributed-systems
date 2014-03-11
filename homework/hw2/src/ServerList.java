@@ -24,23 +24,16 @@ public class ServerList {
                 if (server.id <= lastServerAccessed){
                     continue;
                 }
-                // TODO: IMPLEMENT ME!
-                // if server can connect
-                    // issue command to server
-                // if response
-                    // return response
-                // if no response before timeout
-                    // stop listening for response and continue the loop
                 try {
                     Socket connectionToServer = new Socket(server.address, server.port);
                     PrintWriter dataOut = new PrintWriter(connectionToServer.getOutputStream());
                     BufferedReader dataIn = new BufferedReader(new InputStreamReader(connectionToServer.getInputStream()));
-                    System.out.println("Sending " + request[0] + " " + request[1] +" "+ request[2] + " to " + server.address + ":" + server.port);
+                    System.out.println("ServerList: sending " + request[0] + " " + request[1] +" "+ request[2] + " to " + server.address + ":" + server.port);
                     dataOut.println(request[0] + " " + request[1] + " " + request[2]);
                     dataOut.flush();
 
                     String response = dataIn.readLine();
-                    System.out.println("Response receved from " + server.address + ":" + server.port + " - " + response);
+                    System.out.println("ServerList: response receved from " + server.address + ":" + server.port + " - " + response);
                     if (lastServerAccessed == maxServerId){
                         lastServerAccessed = 0;
                     }else {
@@ -51,14 +44,13 @@ public class ServerList {
                     // Loop for <timeout> time - check to see if we have something from dataIn
 
                 } catch (IOException e) {
-                    System.out.println("Trying to connection to " + server.address + ":" + server.port); // e1.printStackTrace();
+                    System.out.println("ServerList: trying to connection to " + server.address + ":" + server.port); // e1.printStackTrace();
                     try {
                         Thread.sleep(250);
                     } catch (InterruptedException e1) {
                         e1.printStackTrace();
                     }
                 }
-
             }
         }
     }

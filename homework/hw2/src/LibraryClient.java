@@ -2,7 +2,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.ListIterator;
 
 public class LibraryClient {
     private int numServers;
@@ -72,6 +71,4 @@ public class LibraryClient {
     public String makeRequest(String[] request) {
         return serverList.clientQuery(request);
     }
-
-
 }
