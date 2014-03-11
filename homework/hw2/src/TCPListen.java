@@ -1,5 +1,3 @@
-import sun.plugin2.message.Message;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,6 +10,7 @@ public class TCPListen extends Thread {
     int port;
     int killCounter;
     int timeToWait;
+    boolean sleepMode = false;
     public int currentMessageNumber;
     private final MessageProcessor messageProcessor;
 
@@ -21,7 +20,7 @@ public class TCPListen extends Thread {
         this.timeToWait = timeToWait;
         this.currentMessageNumber = 0;
         this.messageProcessor = new MessageProcessor(ch);
-        messageProcessor.start();
+        this.messageProcessor.start();
     }
 
     @Override
@@ -34,11 +33,18 @@ public class TCPListen extends Thread {
                     BufferedReader clientReader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
                     DataOutputStream clientReply = new DataOutputStream(connectionSocket.getOutputStream());
                     String clientCommand = clientReader.readLine();
+                    System.out.println("TCPListen: message received: " + clientCommand);
                     /* Parse and handle the command
                         capture the reply from the server in response
                     */
-                    currentMessageNumber++;
-                    if (killCounter > 0 && currentMessageNumber % killCounter == 0) {
+                    boolean initConnection = clientCommand.split(" ")[0].equals("initConnection");
+                    if (!initConnection){
+                        currentMessageNumber++;
+                    }
+                    if (!initConnection && killCounter > 0 && (currentMessageNumber % killCounter == 0)) {
+                        sleepMode = true;
+                    }
+                    if (sleepMode) {
                         try {
                             System.out.println("received " + killCounter + "th message, sleeping for: " + timeToWait);
                             Thread.sleep(timeToWait);
@@ -49,8 +55,6 @@ public class TCPListen extends Thread {
                     }
                     else {
                         messageProcessor.addMessage(clientCommand, clientReply);
-                        //String response = ch.handleCommand(clientCommand, clientReply);
-                        //clientReply.writeBytes(response + "\n");
                     }
                 }
                 catch (SocketException se){
