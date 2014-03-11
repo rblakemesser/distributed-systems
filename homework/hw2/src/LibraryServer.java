@@ -7,7 +7,7 @@ public class LibraryServer {
     // private DirectClock dc;
     private int myId;
     private int timeToWait = 0;
-    private int killCounter; // may be null!
+    private int killCounter = -1;
     private BookDatabase bookDatabase;
     private ServerList servers;
     private int myPort;
@@ -29,7 +29,6 @@ public class LibraryServer {
             }
         }
         servers = new ServerList(serverLines);
-
         // find the correct localHost listener
         myPort = servers.getServer(pid).port;
         System.out.println("My port is: " + myPort);
@@ -56,7 +55,7 @@ public class LibraryServer {
         }
 
         commandHandler = new CommandHandler(bookDatabase);
-        listener = new TCPListen(myPort, commandHandler);
+        listener = new TCPListen(myPort, commandHandler, killCounter, timeToWait);
         listener.start();
 
         try {

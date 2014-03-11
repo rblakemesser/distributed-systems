@@ -38,7 +38,7 @@ public class ServerList {
                     // and you're done with this loop
 
                 } catch (IOException e) {
-                    System.out.println("Trying to connect connection to " + server.address + ":" + server.port); // e1.printStackTrace();
+                    System.out.println("Trying to connection to " + server.address + ":" + server.port); // e1.printStackTrace();
                     try {
                         Thread.sleep(250);
                     } catch (InterruptedException e1) {
