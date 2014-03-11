@@ -8,7 +8,6 @@ public class Process implements MsgHandler {
     }
     public synchronized void handleMsg(Msg m, int src, String tag){}
     public void sendMsg(int destId, String tag, String msg){
-        System.out.println("Sending msg to " + destId + ":" + tag + " " + msg);
         comm.sendMsg(destId,tag,msg);
     }
     public void sendMsg(int destId, String tag, int msg){

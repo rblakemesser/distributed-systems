@@ -34,6 +34,7 @@ public class Linker {
     }
     public void sendMsg(int destId, String tag, String msg) {
         dataOut[destId].println(myId + " " + destId + " " + tag + " " + msg + "#");
+        System.out.println("Linker: " + myIdx + " " + destId + " " + tag + " " + msg + "#");
         dataOut[destId].flush();
     }
     public void sendMsg(int destId, String tag) {

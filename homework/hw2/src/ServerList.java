@@ -7,18 +7,23 @@ import java.util.ArrayList;
 
 public class ServerList {
     public final ArrayList<OtherServer> serverList;
+    private int lastServerAccessed = 0;
+    private int maxServerId;
 
     public ServerList(ArrayList<String> serverConfigLines) {
         this.serverList = new ArrayList<OtherServer>();
         for (int i=0; i < serverConfigLines.size(); i++) {
             this.serverList.add(new OtherServer(i, serverConfigLines.get(i)));
         }
+        maxServerId = serverList.size();
     }
 
     public String clientQuery(String[] request) {
         while (true) {
             for (OtherServer server : this.serverList) {
-
+                if (server.id <= lastServerAccessed){
+                    continue;
+                }
                 // TODO: IMPLEMENT ME!
                 // if server can connect
                     // issue command to server
@@ -36,6 +41,11 @@ public class ServerList {
 
                     String response = dataIn.readLine();
                     System.out.println("Response receved from " + server.address + ":" + server.port + " - " + response);
+                    if (lastServerAccessed == maxServerId){
+                        lastServerAccessed = 0;
+                    }else {
+                        lastServerAccessed = server.id;
+                    }
                     return response;
                     // Wait for a reply for <timeout>
                     // Loop for <timeout> time - check to see if we have something from dataIn
