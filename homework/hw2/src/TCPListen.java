@@ -35,7 +35,7 @@ public class TCPListen extends Thread {
                         capture the reply from the server in response
                     */
                     currentMessageNumber++;
-                    if (currentMessageNumber % killCounter == 0) {
+                    if (killCounter > 0 && currentMessageNumber % killCounter == 0) {
                         try {
                             System.out.println("received " + killCounter + "th message, sleeping for: " + timeToWait);
                             Thread.sleep(timeToWait);
