@@ -5,7 +5,10 @@ public class BookDatabase {
     public final ArrayList<Integer> bookStatuses;
     public BookDatabase(int numBooks) {
         this.numBooks = numBooks;
-        this.bookStatuses = new ArrayList<Integer>(this.numBooks);
+        this.bookStatuses = new ArrayList<Integer>();
+        for (int i=0; i<numBooks; i++){
+            bookStatuses.add(i, 0);
+        }
     }
     public String reserveBook(int clientNumber, int bookNumber) {
         if (bookStatuses.get(bookNumber) == null) {

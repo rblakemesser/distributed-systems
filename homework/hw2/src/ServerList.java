@@ -30,12 +30,15 @@ public class ServerList {
                     Socket connectionToServer = new Socket(server.address, server.port);
                     PrintWriter dataOut = new PrintWriter(connectionToServer.getOutputStream());
                     BufferedReader dataIn = new BufferedReader(new InputStreamReader(connectionToServer.getInputStream()));
+                    System.out.println("Sending " + request[0] + " " + request[1] +" "+ request[2] + " to " + server.address + ":" + server.port);
                     dataOut.println(request[0] + " " + request[1] + " " + request[2]);
                     dataOut.flush();
 
+                    String response = dataIn.readLine();
+                    System.out.println("Response receved from " + server.address + ":" + server.port + " - " + response);
+                    return response;
                     // Wait for a reply for <timeout>
-                    // Loop for <timeout> time - check to see if dataIn is not null.  If it's NOT null, return the value
-                    // and you're done with this loop
+                    // Loop for <timeout> time - check to see if we have something from dataIn
 
                 } catch (IOException e) {
                     System.out.println("Trying to connect connection to " + server.address + ":" + server.port); // e1.printStackTrace();

@@ -43,7 +43,7 @@ public class LibraryClient {
             e.printStackTrace();
         }
 
-        System.out.println("processing instructions:\n" + input);
+        System.out.println("processing instructions:\n" + Arrays.toString(input));
 
         for (String command : input){
             String[] splitCommand = command.split(" ");
