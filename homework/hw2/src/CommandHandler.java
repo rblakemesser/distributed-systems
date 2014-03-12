@@ -75,14 +75,14 @@ public class CommandHandler {
             // This is essential for the request/release CS to work
 
             int src = Integer.parseInt(splitCommand[1]);
-            int dest = Integer.parseInt(splitCommand[2]);
+            //int dest = Integer.parseInt(splitCommand[2]);
             lamportMutex.handleMsg(new Msg(0, 0, "msg", String.valueOf(lamportMutex.v.getValue(serverId-1))), src, splitCommand[3]);
             if (splitCommand[0].equals("initConnection")) {
                 LibraryCLI.safePrintln("initial connection: " + Arrays.toString(splitCommand));
                 response = "ok";
             }
             else {
-                LibraryCLI.safePrintln("new server communication" + Arrays.toString(splitCommand));
+                LibraryCLI.safePrintln("new INCOMING server communication" + Arrays.toString(splitCommand));
                 response = "okayyy";
 
             }
