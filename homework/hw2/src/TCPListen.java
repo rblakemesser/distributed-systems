@@ -14,13 +14,12 @@ public class TCPListen extends Thread {
     public int currentMessageNumber;
     private final MessageProcessor messageProcessor;
 
-    public TCPListen(int port, CommandHandler ch, int killCounter, int timeToWait) {
+    public TCPListen(int port, MessageProcessor mp, int killCounter, int timeToWait) {
         this.port = port;
         this.killCounter = killCounter;
         this.timeToWait = timeToWait;
         this.currentMessageNumber = 0;
-        this.messageProcessor = new MessageProcessor(ch);
-        this.messageProcessor.start();
+        this.messageProcessor = mp;
     }
 
     @Override
@@ -33,7 +32,8 @@ public class TCPListen extends Thread {
                     BufferedReader clientReader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
                     DataOutputStream clientReply = new DataOutputStream(connectionSocket.getOutputStream());
                     String clientCommand = clientReader.readLine();
-                    System.out.println("TCPListen: message received: " + clientCommand);
+                    // clientReader.close();
+                    LibraryCLI.safePrintln("TCPListen: message received: " + clientCommand);
                     /* Parse and handle the command
                         capture the reply from the server in response
                     */
@@ -46,15 +46,16 @@ public class TCPListen extends Thread {
                     }
                     if (sleepMode) {
                         try {
-                            System.out.println("received " + killCounter + "th message, sleeping for: " + timeToWait);
+                            LibraryCLI.safePrintln("received " + killCounter + "th message, sleeping for: " + timeToWait);
                             Thread.sleep(timeToWait);
                         }
                         catch (InterruptedException e) {
-                            System.out.println("interrupted while 'dead' (shouldnt happen)");
+                            LibraryCLI.safePrintln("interrupted while 'dead' (shouldnt happen)");
                         }
                     }
                     else {
-                        messageProcessor.addMessage(clientCommand, clientReply);
+                        LibraryCLI.safePrintln("TCPListen: Sending message to MessageProcessor");
+                        messageProcessor.addMessage(clientCommand, clientReply, connectionSocket);
                     }
                 }
                 catch (SocketException se){

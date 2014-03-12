@@ -78,6 +78,7 @@ public class Linker {
                 // Send a hello message to P_i
                 dataOut[server.idx].println("initConnection " + myIdx + " " + server.idx + " " + "hello" + " " + "null");
                 dataOut[server.idx].flush();
+                // dataOut[server.idx].close();
             }
         }
     }

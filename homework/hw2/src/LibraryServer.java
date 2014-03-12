@@ -32,7 +32,7 @@ public class LibraryServer {
         // find the correct localHost listener
         myPort = servers.getServer(pid).port;
         servers.getServer(pid).me = true;
-        System.out.println("My port is: " + myPort);
+        LibraryCLI.safePrintln("My port is: " + myPort);
 
         // detect optional last line of server config
         if (splitConfigContents.length == 2 + numServers) {
@@ -44,8 +44,8 @@ public class LibraryServer {
             if (m.find()) {
                 int redundantId = Integer.parseInt(m.group(1));
                 if (redundantId != myId) {
-                    System.out.println("LibraryServer: INCONSISTENT IDs DETECTED FOR THIS SERVER");
-                    System.out.println("LibraryServer: " + myId + " from filename and " + redundantId + " from config file contents");
+                    LibraryCLI.safePrintln("LibraryServer: INCONSISTENT IDs DETECTED FOR THIS SERVER");
+                    LibraryCLI.safePrintln("LibraryServer: " + myId + " from filename and " + redundantId + " from config file contents");
                 }
             }
             else {
@@ -56,7 +56,9 @@ public class LibraryServer {
         }
 
         commandHandler = new CommandHandler(bookDatabase);
-        listener = new TCPListen(myPort, commandHandler, killCounter, timeToWait);
+        MessageProcessor mp = new MessageProcessor(commandHandler);
+        mp.start();
+        listener = new TCPListen(myPort, mp, killCounter, timeToWait);
         listener.start();
 
         try {

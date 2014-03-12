@@ -28,6 +28,7 @@ public class ServerList {
                     Socket connectionToServer = new Socket(server.address, server.port);
                     PrintWriter dataOut = new PrintWriter(connectionToServer.getOutputStream());
                     BufferedReader dataIn = new BufferedReader(new InputStreamReader(connectionToServer.getInputStream()));
+                    dataIn.close();
                     System.out.println("ServerList: sending " + request[0] + " " + request[1] +" "+ request[2] + " to " + server.address + ":" + server.port);
                     dataOut.println(request[0] + " " + request[1] + " " + request[2]);
                     dataOut.flush();

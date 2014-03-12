@@ -46,7 +46,7 @@ public class LamportMutex extends Process implements Lock {
     }
 
     public synchronized void handleMsg(Msg m, int src, String tag){
-        System.out.println("LamportMutex: message received");
+        LibraryCLI.safePrintln("LamportMutex: message received");
         int timestamp = m.getMessageInt();
         v.receiveAction(src, timestamp);
         if(tag.equals("request")) {

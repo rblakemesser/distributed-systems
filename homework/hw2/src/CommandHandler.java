@@ -37,12 +37,12 @@ public class CommandHandler {
     }
 
     public synchronized String handleCommand(String msg){
-        System.out.println("CommandHandler: received communication: " + msg);
+        LibraryCLI.safePrintln("CommandHandler: received communication: " + msg);
         String response;
         String[] splitCommand = msg.split(" ");
         if (splitCommand.length == 3) { // client command
             while (this.lamportMutex == null) {
-                System.out.println("CommandHandler: Waiting for mutex to init before processing client command.");
+                LibraryCLI.safePrintln("CommandHandler: Waiting for mutex to init before processing client command.");
                 try {
                     Thread.sleep(20);
                 } catch (InterruptedException e) {
@@ -69,11 +69,11 @@ public class CommandHandler {
         }
         else { // must be server command
             if (splitCommand[0].equals("initConnection")) {
-                System.out.println("initial connection: " + Arrays.toString(splitCommand));
+                LibraryCLI.safePrintln("initial connection: " + Arrays.toString(splitCommand));
                 response = "ok";
             }
             else {
-                System.out.println("new server communication" + Arrays.toString(splitCommand));
+                LibraryCLI.safePrintln("new server communication" + Arrays.toString(splitCommand));
                 response = "okayyy";
             }
         }
