@@ -55,13 +55,14 @@ public class LibraryServer {
             timeToWait = Integer.parseInt(localServerConfigVars[2]);
         }
 
-        commandHandler = new CommandHandler(bookDatabase);
+        commandHandler = new CommandHandler(bookDatabase, myId);
         listener = new TCPListen(myPort, commandHandler, killCounter, timeToWait);
         listener.start();
 
         try {
             linker = new Linker("libserver", myId, servers);
             lm = new LamportMutex(linker, commandHandler);
+            linker.connect("libserver",linker.dataIn,linker.dataOut);
         }
         catch (IOException e) {
             System.err.println("Could not start linker");

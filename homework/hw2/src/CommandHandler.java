@@ -3,9 +3,11 @@ import java.util.Arrays;
 public class CommandHandler {
     private BookDatabase bookDb;
     private LamportMutex lamportMutex;
+    int serverId;
 
-    public CommandHandler(BookDatabase bookDb) {
+    public CommandHandler(BookDatabase bookDb, int id) {
         this.bookDb = bookDb;
+        serverId = id;
     }
 
     public String reserveBook(int clientNum, int bookNum){
@@ -68,6 +70,13 @@ public class CommandHandler {
             lamportMutex.releaseCS();
         }
         else { // must be server command
+            // Msg(src, dest, tag, buf)
+            // NEED TO PASS MESSAGE TO LAMPORT MUTEX FOR PROCESSING
+            // This is essential for the request/release CS to work
+
+            int src = Integer.parseInt(splitCommand[1]);
+            int dest = Integer.parseInt(splitCommand[2]);
+            lamportMutex.handleMsg(new Msg(0, 0, "msg", String.valueOf(lamportMutex.v.getValue(serverId-1))), src, splitCommand[3]);
             if (splitCommand[0].equals("initConnection")) {
                 LibraryCLI.safePrintln("initial connection: " + Arrays.toString(splitCommand));
                 response = "ok";
@@ -75,6 +84,7 @@ public class CommandHandler {
             else {
                 LibraryCLI.safePrintln("new server communication" + Arrays.toString(splitCommand));
                 response = "okayyy";
+
             }
         }
         return response;

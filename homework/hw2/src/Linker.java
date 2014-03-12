@@ -30,7 +30,7 @@ public class Linker {
             }
         }
         link = new Socket[numProc];
-        connect(basename, dataIn, dataOut);
+        //connect(basename, dataIn, dataOut);
     }
     public void sendMsg(int destId, String tag, String msg) {
         dataOut[destId].println(myId + " " + destId + " " + tag + " " + msg + "#");

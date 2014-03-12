@@ -12,7 +12,7 @@ public class DirectClock {
         clock[myIndex] = 1;
     }
     public int getValue(int i){
-        return clock[myIndex];
+        return clock[i];
     }
     public void tick(){
         clock[myIndex]++;

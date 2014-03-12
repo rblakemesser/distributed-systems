@@ -24,11 +24,12 @@ public class ServerList {
                 if (server.id <= lastServerAccessed){
                     continue;
                 }
+                lastServerAccessed = server.id;
                 try {
                     Socket connectionToServer = new Socket(server.address, server.port);
                     PrintWriter dataOut = new PrintWriter(connectionToServer.getOutputStream());
                     BufferedReader dataIn = new BufferedReader(new InputStreamReader(connectionToServer.getInputStream()));
-                    dataIn.close();
+                    //dataIn.close();
                     LibraryCLI.safePrintln("ServerList: sending " + request[0] + " " + request[1] +" "+ request[2] + " to " + server.address + ":" + server.port);
                     dataOut.println(request[0] + " " + request[1] + " " + request[2]);
                     dataOut.flush();
@@ -37,14 +38,16 @@ public class ServerList {
                     LibraryCLI.safePrintln("ServerList: response receved from " + server.address + ":" + server.port + " - " + response);
                     if (lastServerAccessed == maxServerId){
                         lastServerAccessed = 0;
-                    }else {
-                        lastServerAccessed = server.id;
                     }
+                    dataOut.close();
+                    dataIn.close();
+                    connectionToServer.close();
                     return response;
                     // Wait for a reply for <timeout>
                     // Loop for <timeout> time - check to see if we have something from dataIn
 
                 } catch (IOException e) {
+                    LibraryCLI.safePrintln("Serverlist: Exception message: " + e.getMessage());
                     LibraryCLI.safePrintln("ServerList: trying to connection to " + server.address + ":" + server.port); // e1.printStackTrace();
                     try {
                         Thread.sleep(250);
