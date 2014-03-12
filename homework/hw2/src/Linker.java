@@ -33,9 +33,18 @@ public class Linker {
         //connect(basename, dataIn, dataOut);
     }
     public void sendMsg(int destId, String tag, String msg) {
-        dataOut[destId].println(myId + " " + destId + " " + tag + " " + msg + "#");
-        LibraryCLI.safePrintln("Linker sending message: " + myIdx + " " + destId + " " + tag + " " + msg + "#");
-        dataOut[destId].flush();
+        try {
+            //link[destId].connect(link[destId].getRemoteSocketAddress());
+            dataOut[destId] = new PrintWriter(link[destId].getOutputStream());
+            dataOut[destId].println(myId + " " + destId + " " + tag + " " + msg + "#");
+            LibraryCLI.safePrintln("Linker sending message: " + myIdx + " " + destId + " " + tag + " " + msg + "#");
+            dataOut[destId].flush();
+            dataOut[destId].close();
+        } catch (IOException e) {
+            LibraryCLI.safePrintln("SendMsg exception: " + e.getMessage());
+            e.printStackTrace();
+        }
+
     }
     public void sendMsg(int destId, String tag) {
         sendMsg(destId, tag, " 0 ");
