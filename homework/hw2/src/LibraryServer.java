@@ -49,7 +49,7 @@ public class LibraryServer {
                 }
             }
             else {
-                System.out.println("LibraryServer: COULD NOT GET ID FROM LAST LINE OF CONFIG FILE");
+                LibraryCLI.safePrintln("LibraryServer: COULD NOT GET ID FROM LAST LINE OF CONFIG FILE");
             }
             killCounter = Integer.parseInt(localServerConfigVars[1]);
             timeToWait = Integer.parseInt(localServerConfigVars[2]);

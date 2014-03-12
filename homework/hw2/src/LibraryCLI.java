@@ -42,6 +42,7 @@ public class LibraryCLI {
     public static void safePrintln(String s) {
         synchronized (System.out) {
             System.out.println(s);
+            System.out.flush();
         }
     }
 }

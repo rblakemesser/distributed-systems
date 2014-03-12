@@ -38,11 +38,11 @@ public class Process implements MsgHandler {
 
     @Override
     public Msg receiveMsg(int fromId) {
-        System.out.println("Process: message received");
+        LibraryCLI.safePrintln("Process: message received");
         try {
             return comm.receiveMsg(fromId);
         } catch (IOException e) {
-            System.out.println(e);
+            LibraryCLI.safePrintln(e.getMessage());
             comm.closeSockets();
             return null;
         }

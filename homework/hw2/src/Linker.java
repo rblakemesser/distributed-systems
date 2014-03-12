@@ -34,7 +34,7 @@ public class Linker {
     }
     public void sendMsg(int destId, String tag, String msg) {
         dataOut[destId].println(myId + " " + destId + " " + tag + " " + msg + "#");
-        System.out.println("Linker sending message: " + myIdx + " " + destId + " " + tag + " " + msg + "#");
+        LibraryCLI.safePrintln("Linker sending message: " + myIdx + " " + destId + " " + tag + " " + msg + "#");
         dataOut[destId].flush();
     }
     public void sendMsg(int destId, String tag) {
@@ -47,7 +47,7 @@ public class Linker {
     }
     public Msg receiveMsg(int fromId) throws IOException {
         String getline = dataIn[fromId].readLine();
-        System.out.println("Linker: received message: " + getline);
+        LibraryCLI.safePrintln("Linker: received message: " + getline);
         StringTokenizer st = new StringTokenizer(getline);
         int srcId = Integer.parseInt(st.nextToken());
         int destId = Integer.parseInt(st.nextToken());
@@ -59,13 +59,13 @@ public class Linker {
         // Contact all the bigger processes
         for (OtherServer server : allServers.serverList) {
             if (server.id != myId) {
-                System.out.println("Trying to connect to " + server.address + ":" + server.port); // e1.printStackTrace();
+                LibraryCLI.safePrintln("Trying to connect to " + server.address + ":" + server.port); // e1.printStackTrace();
                 while (link[server.idx] == null) try {
                     link[server.idx] = new Socket(server.address, server.port);
                 }
                 catch (IOException e) {
                     try {
-                        System.out.println("Waiting for server " + server.id + " to initialize."); // e1.printStackTrace();
+                        LibraryCLI.safePrintln("Waiting for server " + server.id + " to initialize."); // e1.printStackTrace();
                         Thread.sleep(250);
                     }
                     catch (InterruptedException e1) {

@@ -42,11 +42,11 @@ public class LibraryClient {
             e.printStackTrace();
         }
 
-        System.out.println("processing instructions:\n" + Arrays.toString(input));
+        LibraryCLI.safePrintln("processing instructions:\n" + Arrays.toString(input));
 
         for (String command : input){
             String[] splitCommand = command.split(" ");
-            System.out.println("first command: \n" + Arrays.toString(splitCommand));
+            LibraryCLI.safePrintln("first command: \n" + Arrays.toString(splitCommand));
             if (splitCommand.length == 2) {
                 long time = new Date().getTime();
                 int timeToWait = Integer.parseInt(splitCommand[1]);
@@ -60,7 +60,7 @@ public class LibraryClient {
                 }
             }
             else {
-                System.out.println(makeRequest(splitCommand));
+                LibraryCLI.safePrintln(makeRequest(splitCommand));
                 //output.println(makeRequest(splitCommand));
             }
         }

@@ -79,8 +79,8 @@ public class LibraryFileHandler {
 
     public static void main (String... aArguments) throws IOException {
         File testFile = new File("input_files/file_rw_test.txt");
-        System.out.println("Original file contents: " + getContents(testFile));
+        LibraryCLI.safePrintln("Original file contents: " + getContents(testFile));
         setContents(testFile, "The content of this file has been overwritten...");
-        System.out.println("New file contents: " + getContents(testFile));
+        LibraryCLI.safePrintln("New file contents: " + getContents(testFile));
     }
 }

@@ -18,7 +18,7 @@ public class OtherServer {
         }
         catch (UnknownHostException e) {
             address = null;
-            System.out.println("OtherServer: UnknownHostException");
+            LibraryCLI.safePrintln("OtherServer: UnknownHostException");
         }
         port = Integer.parseInt(addressComponents[1]);
         local = this.address.getHostAddress().equals("127.0.0.1");
@@ -39,7 +39,7 @@ public class OtherServer {
             return true;
         }
         catch (IOException e) {
-            System.out.println("Port was not available: " + port);
+            LibraryCLI.safePrintln("Port was not available: " + port);
         }
         finally {
             if (ds != null) {
@@ -51,7 +51,7 @@ public class OtherServer {
                     ss.close();
                 }
                 catch (IOException e) {
-                    System.out.println("IMPOSSIBRE!");
+                    LibraryCLI.safePrintln("IMPOSSIBRE!");
                 }
             }
         }

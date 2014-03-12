@@ -18,13 +18,14 @@ public class MessageProcessor extends Thread {
         while (true) {
             if (this.commandQueue.size() > 0) {
                 LibraryCLI.safePrintln("MessageProcessor: the stack trace definitely lies");
-                MessageTrace newCommand = commandQueue.pop();
-                LibraryCLI.safePrintln("MessageProcessor: received message-- processing: " + newCommand.cmd);
-                String response = ch.handleCommand(newCommand.cmd);
+                MessageTrace msgTrace = commandQueue.pop();
+                LibraryCLI.safePrintln("MessageProcessor: received message-- processing: " + msgTrace.cmd);
+                String response = ch.handleCommand(msgTrace.cmd);
                 try {
-                    newCommand.addy.writeBytes(response + "\n");
+                    msgTrace.addy.writeBytes(response + "\n");
                     LibraryCLI.safePrintln("MessageProcessor: wrote bytes to the socket");
-                    newCommand.sock.close();
+                    msgTrace.addy.close();
+                    msgTrace.sock.close();
                 } catch (IOException e) {
                     LibraryCLI.safePrintln("MessageProcessor: the stack trace lies");
                     e.printStackTrace();
@@ -34,8 +35,7 @@ public class MessageProcessor extends Thread {
     }
 
     public synchronized void addMessage(String msg, DataOutputStream addy, Socket tcpSocket) {
-        LibraryCLI.safePrintln("MessageProcessor: received message");
-        System.out.flush();
+        LibraryCLI.safePrintln("MessageProcessor: received message " + msg);
         this.commandQueue.add(new MessageTrace(msg, addy, tcpSocket));
     }
 }
