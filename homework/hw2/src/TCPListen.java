@@ -58,7 +58,7 @@ public class TCPListen extends Thread {
                         String response = ch.handleCommand(clientCommand);
                         try {
                             clientReply.writeBytes(response + "\n");
-                            LibraryCLI.safePrintln("TCPListen: wrote bytes to the socket");
+                            LibraryCLI.safePrintln("TCPListen: wrote response bytes to the socket");
                             clientReply.close();
                             connectionSocket.close();
                         } catch (IOException e) {

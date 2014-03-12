@@ -34,12 +34,14 @@ public class Linker {
     }
     public void sendMsg(int destId, String tag, String msg) {
         try {
-            //link[destId].connect(link[destId].getRemoteSocketAddress());
+            if (!link[destId].isConnected()) {
+                link[destId].connect(link[destId].getRemoteSocketAddress());
+            }
             dataOut[destId] = new PrintWriter(link[destId].getOutputStream());
             dataOut[destId].println(myId + " " + destId + " " + tag + " " + msg + "#");
-            LibraryCLI.safePrintln("Linker sending message: " + myIdx + " " + destId + " " + tag + " " + msg + "#");
             dataOut[destId].flush();
-            dataOut[destId].close();
+            // LibraryCLI.safePrintln(dataIn[destId].readLine());
+            LibraryCLI.safePrintln("Linker sending message: " + myIdx + " " + destId + " " + tag + " " + msg + "#");
         } catch (IOException e) {
             LibraryCLI.safePrintln("SendMsg exception: " + e.getMessage());
             e.printStackTrace();
