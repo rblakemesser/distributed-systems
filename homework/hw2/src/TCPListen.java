@@ -10,16 +10,16 @@ public class TCPListen extends Thread {
     int port;
     int killCounter;
     int timeToWait;
+    CommandHandler ch;
     boolean sleepMode = false;
     public int currentMessageNumber;
-    private final MessageProcessor messageProcessor;
 
-    public TCPListen(int port, MessageProcessor mp, int killCounter, int timeToWait) {
+    public TCPListen(int port, CommandHandler commandHandler, int killCounter, int timeToWait) {
         this.port = port;
         this.killCounter = killCounter;
         this.timeToWait = timeToWait;
         this.currentMessageNumber = 0;
-        this.messageProcessor = mp;
+        this.ch = commandHandler;
     }
 
     @Override
@@ -54,8 +54,16 @@ public class TCPListen extends Thread {
                         }
                     }
                     else {
-                        LibraryCLI.safePrintln("TCPListen: Sending message to MessageProcessor");
-                        messageProcessor.addMessage(clientCommand, clientReply, connectionSocket);
+                        LibraryCLI.safePrintln("TCPListen: Sending message to CommandHandler");
+                        String response = ch.handleCommand(clientCommand);
+                        try {
+                            clientReply.writeBytes(response + "\n");
+                            LibraryCLI.safePrintln("TCPListen: wrote bytes to the socket");
+                            clientReply.close();
+                            connectionSocket.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 catch (SocketException se){

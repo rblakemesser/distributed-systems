@@ -56,9 +56,7 @@ public class LibraryServer {
         }
 
         commandHandler = new CommandHandler(bookDatabase);
-        MessageProcessor mp = new MessageProcessor(commandHandler);
-        mp.start();
-        listener = new TCPListen(myPort, mp, killCounter, timeToWait);
+        listener = new TCPListen(myPort, commandHandler, killCounter, timeToWait);
         listener.start();
 
         try {
