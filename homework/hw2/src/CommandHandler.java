@@ -13,22 +13,22 @@ public class CommandHandler {
     public String reserveBook(int clientNum, int bookNum){
         // bookStatus = 0 means book is not checked out
         if (bookNum > bookDb.bookStatuses.size() || bookNum < 1 || bookDb.bookStatuses.get(bookNum - 1) != 0){
-            return "fail " + clientNum + " " + bookNum;
+            return "fail c" + clientNum + " b" + bookNum;
         }
         else if (bookDb.bookStatuses.get(bookNum-1) == 0){
             bookDb.bookStatuses.set(bookNum-1, clientNum);
             return clientNum + " " + bookNum;
         }
-        return "fail " + clientNum + " " + bookNum;
+        return "fail c" + clientNum + " b" + bookNum;
     }
 
     public String returnBook(int clientNum, int bookNum) {
         if (bookDb.bookStatuses.get(bookNum-1) == clientNum) {
             bookDb.bookStatuses.set(bookNum-1, 0);
-            return "free " + clientNum + " " + bookNum;
+            return "free c" + clientNum + " b" + bookNum;
         }
         else {
-            return "fail " + clientNum + " " + bookNum;
+            return "fail c" + clientNum + " b" + bookNum;
         }
     }
 

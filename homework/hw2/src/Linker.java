@@ -43,15 +43,13 @@ public class Linker {
             LibraryCLI.safePrintln("Linker sending message: " + myIdx + " " + destId + " " + message + "#");
             dataOut[destId].flush();
 
-            while (response == null) {
-                response = dataIn[destId].readLine();
-            }
+            response = dataIn[destId].readLine();
 
         } catch (IOException e) {
             LibraryCLI.safePrintln("SendMsg exception: " + e.getMessage());
             e.printStackTrace();
         }
-        LibraryCLI.safePrintln("Received response: " + message);
+        LibraryCLI.safePrintln("Received response: " + response);
         return response;
     }
 

@@ -35,13 +35,14 @@ public class LamportMutex {
     }
 
     boolean okayCS() {
-        for(int j=0; j<comm.numProc; j++){
-            if(isGreater(q[comm.myIdx], comm.myIdx, q[j], j))
-                return false;
-            if(isGreater(q[comm.myIdx], comm.myIdx, v.getValue(j), j))
-                return false;
-        }
         return true;
+//        for(int j=0; j<comm.numProc; j++){
+//            if(isGreater(q[comm.myIdx], comm.myIdx, q[j], j))
+//                return false;
+//            if(isGreater(q[comm.myIdx], comm.myIdx, v.getValue(j), j))
+//                return false;
+//        }
+//        return true;
     }
 
     boolean isGreater(int entry1, int pid1, int entry2, int pid2){
@@ -70,7 +71,7 @@ public class LamportMutex {
     public void broadcastMsg(String tag, int msg){
         for(int i=0; i < comm.numProc; i++){
             if (i != comm.myIdx){
-                comm.sendMsg(i, tag + msg);
+                comm.sendMsg(i, tag + " " + msg);
             }
         }
     }
