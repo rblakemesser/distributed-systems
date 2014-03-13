@@ -84,7 +84,6 @@ public class CommandHandler {
             else {
                 LibraryCLI.safePrintln("new INCOMING server communication" + Arrays.toString(splitCommand));
                 response = "okayyy";
-
             }
         }
         return response;

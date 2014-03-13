@@ -1,7 +1,6 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 
 public class TCPListen extends Thread {
     int port;
@@ -26,10 +25,8 @@ public class TCPListen extends Thread {
             while (true) {
                 try {
                     Socket connectionSocket = tcpSocket.accept();
-                    //BufferedReader clientReader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-                    //DataOutputStream clientReply = new DataOutputStream(connectionSocket.getOutputStream());
-                    //String clientCommand;
-                    Connection c = new Connection(connectionSocket, ch);
+                    new Connection(connectionSocket, ch);
+                    // c.start();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -38,56 +35,6 @@ public class TCPListen extends Thread {
             e.printStackTrace();
         }
     }
-                    /*
-                    while ((clientCommand = clientReader.readLine()) != null){
-
-
-                    // clientReader.close();
-                    LibraryCLI.safePrintln("TCPListen: message received: " + clientCommand);
-                    // Parse and handle the command
-                    //    capture the reply from the server in response
-
-                    boolean initConnection = clientCommand.split(" ")[0].equals("initConnection");
-                    if (!initConnection){
-                        currentMessageNumber++;
-                    }
-                    if (!initConnection && killCounter > 0 && (currentMessageNumber % killCounter == 0)) {
-                        sleepMode = true;
-                    }
-                    if (sleepMode) {
-                        try {
-                            LibraryCLI.safePrintln("received " + killCounter + "th message, sleeping for: " + timeToWait);
-                            Thread.sleep(timeToWait);
-                        }
-                        catch (InterruptedException e) {
-                            LibraryCLI.safePrintln("interrupted while 'dead' (shouldnt happen)");
-                        }
-                    }
-                    else {
-                        LibraryCLI.safePrintln("TCPListen: Sending message to CommandHandler");
-                        String response = ch.handleCommand(clientCommand);
-                        try {
-                            clientReply.writeBytes(response + "\n");
-                            LibraryCLI.safePrintln("TCPListen: wrote bytes to the socket");
-
-                        } catch (IOException e) {
-                            LibraryCLI.safePrintln("TCPListen: IOException after CommandHandler");
-                            e.printStackTrace();
-                        }
-                    }
-                    }
-                    clientReply.close();
-                    connectionSocket.close();
-                }
-                catch (SocketException se){
-                    System.err.println(se);
-                }
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        } */
-
 
     class Connection extends Thread {
         Socket s;
@@ -101,13 +48,13 @@ public class TCPListen extends Thread {
 
         public void run() {
             try {
-                BufferedReader clientReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                PrintWriter clientReply = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
-                String clientCommand;
-                while ((clientCommand = clientReader.readLine()) != null)
+                BufferedReader connectionReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                PrintWriter connectionReply = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
+                String connectionMessage;
+                while ((connectionMessage = connectionReader.readLine()) != null)
                 {
-                    LibraryCLI.safePrintln("TCPListen/Connection - Received from client: " + clientCommand);
-                    boolean initConnection = clientCommand.split(" ")[0].equals("initConnection");
+                    LibraryCLI.safePrintln("TCPListen/Connection - Received from client: " + connectionMessage);
+                    boolean initConnection = connectionMessage.split(" ")[0].equals("initConnection");
                     if (!initConnection) {
                         currentMessageNumber++;
                     }
@@ -121,14 +68,13 @@ public class TCPListen extends Thread {
                         } catch (InterruptedException e) {
                             LibraryCLI.safePrintln("interrupted while 'dead' (shouldnt happen)");
                         }
-                    } else {
+                    }
+                    else {
                         LibraryCLI.safePrintln("TCPListen: Sending message to CommandHandler");
-                        String response = ch.handleCommand(clientCommand);
+                        String response = ch.handleCommand(connectionMessage);
                         try {
-                            clientReply.println(response + "\n");
+                            connectionReply.println(response + "\n");
                             LibraryCLI.safePrintln("TCPListen: wrote bytes to the socket: " + response);
-                            //clientReply.close();
-                            //s.close();
 
                         } catch (Exception e) {
                             LibraryCLI.safePrintln("TCPListen: IOException after CommandHandler");
