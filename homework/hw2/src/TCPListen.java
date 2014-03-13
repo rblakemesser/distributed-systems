@@ -7,14 +7,13 @@ public class TCPListen extends Thread {
     int killCounter;
     int timeToWait;
     CommandHandler ch;
-    boolean sleepMode = false;
-    public int currentMessageNumber;
+    static boolean sleepMode = false;
+    public static int currentMessageNumber = 0;
 
     public TCPListen(int port, CommandHandler commandHandler, int killCounter, int timeToWait) {
         this.port = port;
         this.killCounter = killCounter;
         this.timeToWait = timeToWait;
-        this.currentMessageNumber = 0;
         this.ch = commandHandler;
     }
 
@@ -50,31 +49,29 @@ public class TCPListen extends Thread {
             try {
                 BufferedReader connectionReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 PrintWriter connectionReply = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
-                String connectionMessage;
-                while ((connectionMessage = connectionReader.readLine()) != null)
-                {
+                String connectionMessage = connectionReader.readLine();
+                while (connectionMessage != null) {
                     LibraryCLI.safePrintln("TCPListen/Connection - Received from client: " + connectionMessage);
+
+                    // handle initConnections from other servers
                     boolean initConnection = connectionMessage.split(" ")[0].equals("initConnection");
                     if (!initConnection) {
                         currentMessageNumber++;
                     }
                     if (!initConnection && killCounter > 0 && (currentMessageNumber % killCounter == 0)) {
-                        sleepMode = true;
+                        TCPListen.sleepMode = true;
                     }
-                    if (sleepMode) {
-                        try {
-                            LibraryCLI.safePrintln("received " + killCounter + "th message, sleeping for: " + timeToWait);
-                            Thread.sleep(timeToWait);
-                        } catch (InterruptedException e) {
-                            LibraryCLI.safePrintln("interrupted while 'dead' (shouldnt happen)");
-                        }
+                    if (TCPListen.sleepMode) {
+                        // TODO do sleep mode stuff
                     }
-                    else {
+                    else { // if not sleep mode, then handle the message
                         LibraryCLI.safePrintln("TCPListen: Sending message to CommandHandler");
                         String response = ch.handleCommand(connectionMessage);
                         try {
                             connectionReply.println(response + "\n");
                             LibraryCLI.safePrintln("TCPListen: wrote bytes to the socket: " + response);
+                            connectionReply.flush();
+                            s.close();
 
                         } catch (Exception e) {
                             LibraryCLI.safePrintln("TCPListen: IOException after CommandHandler");

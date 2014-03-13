@@ -43,6 +43,7 @@ public class CommandHandler {
         String response;
         String[] splitCommand = msg.split(" ");
         if (splitCommand.length == 3) { // client command
+            LibraryCLI.safePrintln("CommandHandler: identified as client command: " + msg);
             while (this.lamportMutex == null) {
                 LibraryCLI.safePrintln("CommandHandler: Waiting for mutex to init before processing client command.");
                 try {
@@ -73,16 +74,20 @@ public class CommandHandler {
             // Msg(src, dest, tag, buf)
             // NEED TO PASS MESSAGE TO LAMPORT MUTEX FOR PROCESSING
             // This is essential for the request/release CS to work
+            LibraryCLI.safePrintln("CommandHandler: identified as server message: " + Arrays.toString(splitCommand));
 
-            int src = Integer.parseInt(splitCommand[1]);
+
+            int senderIdx = Integer.parseInt(splitCommand[1]);
+
+            LibraryCLI.safePrintln("CommandHandler: sent by: " + senderIdx);
             //int dest = Integer.parseInt(splitCommand[2]);
-            lamportMutex.handleMsg(new Msg(0, 0, "msg", String.valueOf(lamportMutex.v.getValue(serverId-1))), src, splitCommand[3]);
             if (splitCommand[0].equals("initConnection")) {
                 LibraryCLI.safePrintln("initial connection: " + Arrays.toString(splitCommand));
                 response = "ok";
             }
             else {
                 LibraryCLI.safePrintln("new INCOMING server communication" + Arrays.toString(splitCommand));
+                lamportMutex.handleMsg(new Msg(0, 0, "msg", String.valueOf(lamportMutex.v.getValue(serverId-1))), senderIdx, splitCommand[3]);
                 response = "okayyy";
             }
         }

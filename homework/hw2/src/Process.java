@@ -6,7 +6,10 @@ public class Process implements MsgHandler {
     public Process(Linker initComm) {
         comm = initComm;
     }
-    public synchronized void handleMsg(Msg m, int src, String tag){}
+    public synchronized String handleMsg(Msg m, int src, String tag){
+        return "the process should never call handleMsg";
+    }
+
     public void sendMsg(int destId, String tag, String msg){
         comm.sendMsg(destId,tag,msg);
     }

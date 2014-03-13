@@ -1,6 +1,6 @@
 import java.io.IOException;
 
 public interface MsgHandler {
-    public void handleMsg(Msg m, int srcId, String tag);
+    public String handleMsg(Msg m, int srcId, String tag);
     public Msg receiveMsg(int fromId) throws IOException;
 }

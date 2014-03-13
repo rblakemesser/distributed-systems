@@ -45,16 +45,17 @@ public class LamportMutex extends Process implements Lock {
         return ((entry1 > entry2) || ((entry1 == entry2) && (pid1 > pid2)));
     }
 
-    public synchronized void handleMsg(Msg m, int src, String tag){
+    public synchronized String handleMsg(Msg m, int src, String tag){
         LibraryCLI.safePrintln("LamportMutex: message received" + m);
         int timestamp = m.getMessageInt();
         v.receiveAction(src, timestamp);
         if(tag.equals("request")) {
             q[src] = timestamp;
-            sendMsg(src, "ack", v.getValue(comm.myIdx));
+            // sendMsg(src, "ack", v.getValue(comm.myIdx));
         }else if (tag.equals("release")){
             q[src] = -1;
         }
         notify();  // okayCS() may be true now
+        return comm.myIdx + " " + src + " ack " + v.getValue(comm.myIdx) + "#";
     }
 }
