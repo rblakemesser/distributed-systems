@@ -17,38 +17,36 @@ class Connection extends Thread {
             BufferedReader connectionReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
             PrintWriter connectionReply = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
             String connectionMessage = connectionReader.readLine();
-            while (connectionMessage != null) {
-                LibraryCLI.safePrintln("TCPListen/Connection - Received from client: " + connectionMessage);
+            LibraryCLI.safePrintln("TCPListen/Connection - Received from client: " + connectionMessage);
 
-                // handle initConnections from other servers
-                boolean initConnection = connectionMessage.split(" ")[0].equals("initConnection");
-                if (!initConnection) {
-                    TCPListen.currentMessageNumber++;
+            // handle initConnections from other servers
+            boolean initConnection = connectionMessage.split(" ")[0].equals("initConnection");
+            if (!initConnection) {
+                TCPListen.currentMessageNumber++;
+            }
+            if (!initConnection && TCPListen.killCounter > 0 && (TCPListen.currentMessageNumber % TCPListen.killCounter == 0)) {
+                TCPListen.sleepMode = true;
+            }
+            if (TCPListen.sleepMode) {
+                // TODO do sleep mode stuff
+            }
+            else { // if not sleep mode, then handle the message
+                LibraryCLI.safePrintln("TCPListen: Sending message to CommandHandler");
+                if(isClientMessage(connectionMessage)) {
+                    response = ch.handleClientCommand(connectionMessage);
                 }
-                if (!initConnection && TCPListen.killCounter > 0 && (TCPListen.currentMessageNumber % TCPListen.killCounter == 0)) {
-                    TCPListen.sleepMode = true;
+                else {
+                    response = ch.handleServerMessage(connectionMessage);
                 }
-                if (TCPListen.sleepMode) {
-                    // TODO do sleep mode stuff
-                }
-                else { // if not sleep mode, then handle the message
-                    LibraryCLI.safePrintln("TCPListen: Sending message to CommandHandler");
-                    if(isClientMessage(connectionMessage)) {
-                        response = ch.handleClientCommand(connectionMessage);
-                    }
-                    else {
-                        response = ch.handleServerMessage(connectionMessage);
-                    }
-                    try {
-                        connectionReply.println(response + "\n");
-                        LibraryCLI.safePrintln("TCPListen: wrote bytes to the socket: " + response);
-                        connectionReply.flush();
-                        s.close();
+                try {
+                    connectionReply.println(response + "\n");
+                    LibraryCLI.safePrintln("TCPListen: wrote bytes to the socket: " + response);
+                    connectionReply.flush();
+                    s.close();
 
-                    } catch (Exception e) {
-                        LibraryCLI.safePrintln("TCPListen: IOException after CommandHandler");
-                        e.printStackTrace();
-                    }
+                } catch (Exception e) {
+                    LibraryCLI.safePrintln("TCPListen: IOException after CommandHandler");
+                    e.printStackTrace();
                 }
             }
         } catch (IOException e) {
