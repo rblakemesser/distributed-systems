@@ -1,30 +1,36 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CommandHandler {
-    private BookDatabase bookDb;
+    public static ArrayList<Integer> bookStatuses;
     private LamportMutex lamportMutex;
     int serverId;
+    int numBooks;
 
-    public CommandHandler(BookDatabase bookDb, int id) {
-        this.bookDb = bookDb;
+    public CommandHandler(int numBooks, int id) {
         serverId = id;
+        this.numBooks = numBooks;
+        bookStatuses = new ArrayList<Integer>();
+        for (int i=0; i<numBooks; i++){
+            bookStatuses.add(i, 0);
+        }
     }
 
-    public String reserveBook(int clientNum, int bookNum){
+    public synchronized String reserveBook(int clientNum, int bookNum){
         // bookStatus = 0 means book is not checked out
-        if (bookNum > bookDb.bookStatuses.size() || bookNum < 1 || bookDb.bookStatuses.get(bookNum - 1) != 0){
+        if (bookNum > bookStatuses.size() || bookNum < 1 || bookStatuses.get(bookNum - 1) != 0){
             return "fail c" + clientNum + " b" + bookNum;
         }
-        else if (bookDb.bookStatuses.get(bookNum-1) == 0){
-            bookDb.bookStatuses.set(bookNum-1, clientNum);
-            return clientNum + " " + bookNum;
+        else if (bookStatuses.get(bookNum-1) == 0){
+            bookStatuses.set(bookNum-1, clientNum);
+            return "c" + clientNum + " b" + bookNum;
         }
         return "fail c" + clientNum + " b" + bookNum;
     }
 
-    public String returnBook(int clientNum, int bookNum) {
-        if (bookDb.bookStatuses.get(bookNum-1) == clientNum) {
-            bookDb.bookStatuses.set(bookNum-1, 0);
+    public synchronized String returnBook(int clientNum, int bookNum) {
+        if (bookStatuses.get(bookNum-1) == clientNum) {
+            bookStatuses.set(bookNum-1, 0);
             return "free c" + clientNum + " b" + bookNum;
         }
         else {

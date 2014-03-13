@@ -35,7 +35,7 @@ public class ServerList {
                     dataOut.flush();
 
                     String response = dataIn.readLine();
-                    LibraryCLI.safePrintln("ServerList: response receved from " + server.address + ":" + server.port + " - " + response);
+                    LibraryCLI.safePrintln("ServerList: response received from " + server.address + ":" + server.port + " - " + response);
                     if (lastServerAccessed == maxServerId){
                         lastServerAccessed = 0;
                     }

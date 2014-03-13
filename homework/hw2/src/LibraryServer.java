@@ -8,7 +8,6 @@ public class LibraryServer {
     private int myId;
     private int timeToWait = 0;
     private int killCounter = -1;
-    private BookDatabase bookDatabase;
     private ServerList servers;
     private int myPort;
     private LamportMutex lm;
@@ -21,7 +20,6 @@ public class LibraryServer {
         int numServers = Integer.parseInt(universalServerConfigVars[0]);
         int numBooks = Integer.parseInt(universalServerConfigVars[1]);
         myId = pid;
-        bookDatabase = new BookDatabase(numBooks);
         ArrayList<String> serverLines = new ArrayList<String>();
         for (String configLine : splitConfigContents) {
             if (configLine.split(":").length == 2){
@@ -55,7 +53,7 @@ public class LibraryServer {
             timeToWait = Integer.parseInt(localServerConfigVars[2]);
         }
 
-        commandHandler = new CommandHandler(bookDatabase, myId);
+        commandHandler = new CommandHandler(numBooks, myId);
         listener = new TCPListen(myPort, commandHandler, killCounter, timeToWait);
         listener.start();
 
