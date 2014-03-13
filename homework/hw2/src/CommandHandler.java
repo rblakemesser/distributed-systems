@@ -32,64 +32,52 @@ public class CommandHandler {
         }
     }
 
-    public void synchServers(){
-        /* Synchronize the allServers - make sure they all have up to date
-           book lists, client lists, server lists
-         */
+    public String handleClientCommand(String s) {
+        String response;
+        LibraryCLI.safePrintln("CommandHandler: identified as client command: " + s);
+        while (this.lamportMutex == null) {
+            LibraryCLI.safePrintln("CommandHandler: Waiting for mutex to init before processing client command.");
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        String[] splitCommand = s.split(" ");
+        int clientId = Integer.parseInt(splitCommand[0].replace("c", ""));
+        int bookNum = Integer.parseInt(splitCommand[1].replace("b", ""));
+        String command = splitCommand[2];
+        lamportMutex.requestCS();
+        if (command.equals("reserve")){
+            // run reserveBook
+            response = reserveBook(clientId, bookNum);
+        }
+        else if (command.equals("return")){
+            // run returnBook
+            response = returnBook(clientId, bookNum);
+        }
+        else {
+            response = "Error";
+        }
+        lamportMutex.releaseCS();
+        return response;
     }
 
-    public synchronized String handleCommand(String msg){
-        LibraryCLI.safePrintln("CommandHandler: received communication: " + msg);
+    public String handleServerMessage(String s) {
         String response;
-        String[] splitCommand = msg.split(" ");
-        if (splitCommand.length == 3) { // client command
-            LibraryCLI.safePrintln("CommandHandler: identified as client command: " + msg);
-            while (this.lamportMutex == null) {
-                LibraryCLI.safePrintln("CommandHandler: Waiting for mutex to init before processing client command.");
-                try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+        String[] splitCommand = s.split(" ");
+        LibraryCLI.safePrintln("CommandHandler: identified as server message: " + Arrays.toString(splitCommand));
+        int senderIdx = Integer.parseInt(splitCommand[1]);
 
-            int clientId = Integer.parseInt(splitCommand[0].replace("c", ""));
-            int bookNum = Integer.parseInt(splitCommand[1].replace("b", ""));
-            String command = splitCommand[2];
-            lamportMutex.requestCS();
-            if (command.equals("reserve")){
-                // run reserveBook
-                response = reserveBook(clientId, bookNum);
-            }
-            else if (command.equals("return")){
-                // run returnBook
-                response = returnBook(clientId, bookNum);
-            }
-            else {
-                response = "Error";
-            }
-            lamportMutex.releaseCS();
+        LibraryCLI.safePrintln("CommandHandler: sent by: " + senderIdx);
+        //int dest = Integer.parseInt(splitCommand[2]);
+        if (splitCommand[0].equals("initConnection")) {
+            LibraryCLI.safePrintln("initial connection: " + Arrays.toString(splitCommand));
+            response = "ok";
         }
-        else { // must be server command
-            // Msg(src, dest, tag, buf)
-            // NEED TO PASS MESSAGE TO LAMPORT MUTEX FOR PROCESSING
-            // This is essential for the request/release CS to work
-            LibraryCLI.safePrintln("CommandHandler: identified as server message: " + Arrays.toString(splitCommand));
-
-
-            int senderIdx = Integer.parseInt(splitCommand[1]);
-
-            LibraryCLI.safePrintln("CommandHandler: sent by: " + senderIdx);
-            //int dest = Integer.parseInt(splitCommand[2]);
-            if (splitCommand[0].equals("initConnection")) {
-                LibraryCLI.safePrintln("initial connection: " + Arrays.toString(splitCommand));
-                response = "ok";
-            }
-            else {
-                LibraryCLI.safePrintln("new INCOMING server communication" + Arrays.toString(splitCommand));
-                lamportMutex.handleMsg(new Msg(0, 0, "msg", String.valueOf(lamportMutex.v.getValue(serverId-1))), senderIdx, splitCommand[3]);
-                response = "okayyy";
-            }
+        else {
+            LibraryCLI.safePrintln("new INCOMING server communication" + Arrays.toString(splitCommand));
+            response = lamportMutex.handleMsg(new Msg(0, 0, "msg", String.valueOf(lamportMutex.v.getValue(serverId-1))), senderIdx, splitCommand[3]);
         }
         return response;
     }

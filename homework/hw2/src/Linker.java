@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.StringTokenizer;
 
 public class Linker {
     Socket[] link;
@@ -32,41 +31,30 @@ public class Linker {
         link = new Socket[numProc];
         //connect(basename, dataIn, dataOut);
     }
-    public void sendMsg(int destId, String tag, String msg) {
+
+    public String sendMsg(int destId, String message) {
+        String response = null;
         try {
             if (!link[destId].isConnected()) {
                 link[destId].connect(link[destId].getRemoteSocketAddress());
             }
             dataOut[destId] = new PrintWriter(link[destId].getOutputStream());
-            dataOut[destId].println(myIdx + " " + destId + " " + tag + " " + msg + "#");
-            LibraryCLI.safePrintln("Linker sending message: " + myIdx + " " + destId + " " + tag + " " + msg + "#");
+            dataOut[destId].println(myIdx + " " + destId + " " + message + "#");
+            LibraryCLI.safePrintln("Linker sending message: " + myIdx + " " + destId + " " + message + "#");
             dataOut[destId].flush();
-            dataOut[destId].close();
+
+            while (response == null) {
+                response = dataIn[destId].readLine();
+            }
 
         } catch (IOException e) {
             LibraryCLI.safePrintln("SendMsg exception: " + e.getMessage());
             e.printStackTrace();
         }
+        LibraryCLI.safePrintln("Received response: " + message);
+        return response;
+    }
 
-    }
-    public void sendMsg(int destId, String tag) {
-        sendMsg(destId, tag, " 0 ");
-    }
-    public void multicast(IntLinkedList destIds, String tag, String msg) {
-        for (int i=0; i<destIds.size(); i++) {
-            sendMsg(destIds.getEntry(i), tag, msg);
-        }
-    }
-    public Msg receiveMsg(int fromId) throws IOException {
-        String getline = dataIn[fromId].readLine();
-        LibraryCLI.safePrintln("Linker: received message: " + getline);
-        StringTokenizer st = new StringTokenizer(getline);
-        int srcId = Integer.parseInt(st.nextToken());
-        int destId = Integer.parseInt(st.nextToken());
-        String tag = st.nextToken();
-        String msg = st.nextToken("#");
-        return new Msg(srcId, destId, tag, msg);
-    }
     public void connect(String basename, BufferedReader[] dataIn, PrintWriter[] dataOut) throws IOException {
         // Contact all the bigger processes
         for (OtherServer server : allServers.serverList) {

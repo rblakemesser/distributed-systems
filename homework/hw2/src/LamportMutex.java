@@ -1,9 +1,10 @@
-public class LamportMutex extends Process implements Lock {
+public class LamportMutex {
     DirectClock v;
     int[] q;  // request queue
+    Linker comm;
 
     public LamportMutex(Linker initComm, CommandHandler commandHandler) {
-        super(initComm);
+        comm = initComm;
         v = new DirectClock(comm.numProc, comm.myIdx);
         q = new int[comm.numProc];
         for(int j=0; j < comm.numProc; j++){
@@ -12,7 +13,13 @@ public class LamportMutex extends Process implements Lock {
         commandHandler.registerMutex(this);
     }
 
-    @Override
+    public synchronized void myWait(){
+        try{
+            wait();
+        }
+        catch (InterruptedException e){ System.err.println(e); }
+    }
+
     public synchronized void requestCS() {
         v.tick();
         q[comm.myIdx] = v.getValue(comm.myIdx);
@@ -22,7 +29,6 @@ public class LamportMutex extends Process implements Lock {
         }
     }
 
-    @Override
     public synchronized void releaseCS() {
         q[comm.myIdx] = -1;
         broadcastMsg("release", v.getValue(comm.myIdx));
@@ -46,16 +52,27 @@ public class LamportMutex extends Process implements Lock {
     }
 
     public synchronized String handleMsg(Msg m, int src, String tag){
+        String response = null;
         LibraryCLI.safePrintln("LamportMutex: message received" + m);
         int timestamp = m.getMessageInt();
         v.receiveAction(src, timestamp);
         if(tag.equals("request")) {
             q[src] = timestamp;
-            // sendMsg(src, "ack", v.getValue(comm.myIdx));
-        }else if (tag.equals("release")){
+            response = src + " ack " + v.getValue(comm.myIdx);
+        }
+        else if (tag.equals("release")){
             q[src] = -1;
         }
         notify();  // okayCS() may be true now
-        return comm.myIdx + " " + src + " ack " + v.getValue(comm.myIdx) + "#";
+        return response;
     }
+
+    public void broadcastMsg(String tag, int msg){
+        for(int i=0; i < comm.numProc; i++){
+            if (i != comm.myIdx){
+                comm.sendMsg(i, tag + msg);
+            }
+        }
+    }
+
 }
