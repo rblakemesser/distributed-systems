@@ -77,7 +77,13 @@ public class CommandHandler {
         }
         else {
             LibraryCLI.safePrintln("new INCOMING server communication" + Arrays.toString(splitCommand));
-            response = lamportMutex.handleMsg(new Msg(0, 0, "msg", String.valueOf(lamportMutex.v.getValue(serverId-1))), senderIdx, splitCommand[3]);
+
+            Msg msgObject = new Msg(Integer.parseInt(splitCommand[0]),
+                                    Integer.parseInt(splitCommand[1]),
+                                    "msg",
+                                    String.valueOf(lamportMutex.v.getValue(serverId-1)));
+
+            response = lamportMutex.handleMsg(msgObject, senderIdx, splitCommand[2]);
         }
         return response;
     }
