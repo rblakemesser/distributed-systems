@@ -74,30 +74,46 @@ public class CommandHandler {
         // Message format: <tag> <from id> <to id> <message> <null>
         String response;
         String[] splitCommand = s.split(" ");
-        LibraryCLI.safePrintln("CommandHandler: identified as server message: " + Arrays.toString(splitCommand));
-        //int senderIdx = Integer.parseInt(splitCommand[1]);  // TODO: Is this right?
-
-        //LibraryCLI.safePrintln("CommandHandler: sent by: " + senderIdx);
-        //int dest = Integer.parseInt(splitCommand[2]);
         if (splitCommand[0].equals("initConnection")) {
             LibraryCLI.safePrintln("initial connection: " + Arrays.toString(splitCommand));
-            response = "ok";  // TODO: why is this being returned on non-init messages?
+            return "ok";
         }
-        else {
-            int senderIdx = Integer.parseInt(splitCommand[0]);
-            LibraryCLI.safePrintln("new INCOMING server communication" + Arrays.toString(splitCommand));
 
-            Msg msgObject = new Msg(Integer.parseInt(splitCommand[0]),
-                                    Integer.parseInt(splitCommand[1]),
-                                    splitCommand[2],//"msg",
-                                    String.valueOf(lamportMutex.v.getValue(serverId-1)));
+        LibraryCLI.safePrintln("CommandHandler: identified as server message: " + Arrays.toString(splitCommand));
+        int senderIdx = Integer.parseInt(splitCommand[0]);
+        String msgType = splitCommand[2];
+        String tsComponent = splitCommand[3];
+        int timestamp = tsComponent.contains("#") ? Integer.parseInt(tsComponent.substring(0, tsComponent.length() - 1)) : Integer.parseInt(tsComponent);  // remove the #
 
-            response = lamportMutex.handleMsg(msgObject, senderIdx, splitCommand[2]);
+
+        if (s.contains("?")){
+            // must be a release message
+            String bookList = s.split("\\?")[1]; // take everything after the question mark
+            setSerializedBookList(bookList.substring(0, bookList.length() - 1)); // remove the hash off the end
+            LibraryCLI.safePrintln("CommandHandler: received book list: " + getSerializedBookList());
         }
+        response = lamportMutex.handleMsg(timestamp, senderIdx, msgType);
         return response;
     }
 
     public void registerMutex(LamportMutex mutex) {
         this.lamportMutex = mutex;
+    }
+
+    public String getSerializedBookList() {
+        String sbooklist = "";
+        for (int b : bookStatuses) {
+            sbooklist += b + ",";
+        }
+        return sbooklist.substring(0, sbooklist.length() - 1);
+    }
+
+    public void setSerializedBookList(String s) {
+        String[] sbooklist = s.split(",");
+        ArrayList<Integer> newBookList = new ArrayList<Integer>();
+        for (String b : sbooklist) {
+            newBookList.add(Integer.parseInt(b));
+        }
+        bookStatuses = newBookList;
     }
 }
