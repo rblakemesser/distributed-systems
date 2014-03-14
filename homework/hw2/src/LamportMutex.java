@@ -64,6 +64,7 @@ public class LamportMutex {
         }
         else if (tag.equals("release")){
             q[senderIdx] = -1;
+            //response = comm.myIdx + " null " + v.getValue(comm.myIdx);
         }
         notify();  // okayCS() may be true now
         return response;
@@ -73,6 +74,7 @@ public class LamportMutex {
         for(int i=0; i < comm.numProc; i++){
             if (i != comm.myIdx){
                 String[] response = comm.sendMsg(i, msg).split(" ");  // returns the acks
+                if (response.length < 3) continue;
                 int ts = Integer.parseInt(response[2]);
                 int senderIdx = Integer.parseInt(response[0]);
                 String tag = response[1];
