@@ -56,11 +56,11 @@ public class LamportMutex {
 
     public synchronized String handleMsg(int ts, int senderIdx, String tag){
         String response = null;
-        LibraryCLI.safePrintln("LamportMutex: message received" + ts);
+        LibraryCLI.safePrintln("LamportMutex: message received " + ts);
         v.receiveAction(senderIdx, ts);
         if(tag.equals("request")) {
             q[senderIdx] = ts;
-            response = senderIdx + " ack " + v.getValue(comm.myIdx);
+            response = comm.myIdx + " ack " + v.getValue(comm.myIdx);
         }
         else if (tag.equals("release")){
             q[senderIdx] = -1;
@@ -72,7 +72,12 @@ public class LamportMutex {
     public void broadcastMsg(String msg){
         for(int i=0; i < comm.numProc; i++){
             if (i != comm.myIdx){
-                comm.sendMsg(i, msg);  // returns the acks
+                String[] response = comm.sendMsg(i, msg).split(" ");  // returns the acks
+                int ts = Integer.parseInt(response[2]);
+                int senderIdx = Integer.parseInt(response[0]);
+                String tag = response[1];
+
+                handleMsg(ts, senderIdx, tag);
             }
         }
     }
