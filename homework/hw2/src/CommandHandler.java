@@ -74,11 +74,15 @@ public class CommandHandler {
         // Message format: <tag> <from id> <to id> <message> <null>
         String response;
         String[] splitCommand = s.split(" ");
+        if (splitCommand[0].equals("initConnection")) {
+            LibraryCLI.safePrintln("initial connection: " + Arrays.toString(splitCommand));
+            return "ok";
+        }
         LibraryCLI.safePrintln("CommandHandler: identified as server message: " + Arrays.toString(splitCommand));
         int senderIdx = Integer.parseInt(splitCommand[0]);
-        int receiverIdx = Integer.parseInt(splitCommand[1]);
         String msgType = splitCommand[2];
-        int timestamp = Integer.parseInt(splitCommand[3]);  // remove the #
+        String tsComponent = splitCommand[3];
+        int timestamp = tsComponent.contains("#") ? Integer.parseInt(tsComponent.substring(0, tsComponent.length() - 1)) : Integer.parseInt(tsComponent);  // remove the #
 
         if (s.contains("?")){
             // must be a release message
@@ -86,19 +90,7 @@ public class CommandHandler {
             setSerializedBookList(bookList.substring(0, bookList.length() - 1)); // remove the hash off the end
             LibraryCLI.safePrintln("CommandHandler: received book list: " + getSerializedBookList());
         }
-
-        LibraryCLI.safePrintln("CommandHandler: sent by: " + senderIdx);
-        //int dest = Integer.parseInt(splitCommand[2]);
-        if (splitCommand[0].equals("initConnection")) {
-            LibraryCLI.safePrintln("initial connection: " + Arrays.toString(splitCommand));
-            response = "ok";  // TODO: why is this being returned on non-init messages?
-        }
-        else {
-            LibraryCLI.safePrintln("new INCOMING server communication" + Arrays.toString(splitCommand));
-
-            String myVector = String.valueOf(lamportMutex.v.getValue(serverId-1));
-            response = lamportMutex.handleMsg(timestamp, senderIdx, splitCommand[2]);
-        }
+        response = lamportMutex.handleMsg(timestamp, senderIdx, msgType);
         return response;
     }
 

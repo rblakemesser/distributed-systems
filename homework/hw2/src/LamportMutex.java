@@ -34,18 +34,16 @@ public class LamportMutex {
     public synchronized void releaseCS() {
         q[comm.myIdx] = -1;
         broadcastMsg("release " + v.getValue(comm.myIdx) + " ?" + ch.getSerializedBookList());
-        // TODO: NEED TO SEND BOOK STATUSES HERE - static fields won't work across multiple instances of the application
     }
 
     boolean okayCS() {
+        for(int j=0; j<comm.numProc; j++){
+            if(isGreater(q[comm.myIdx], comm.myIdx, q[j], j))
+                return false;
+            if(isGreater(q[comm.myIdx], comm.myIdx, v.getValue(j), j))
+                return false;
+        }
         return true;
-//        for(int j=0; j<comm.numProc; j++){
-//            if(isGreater(q[comm.myIdx], comm.myIdx, q[j], j))
-//                return false;
-//            if(isGreater(q[comm.myIdx], comm.myIdx, v.getValue(j), j))
-//                return false;
-//        }
-//        return true;
     }
 
     boolean isGreater(int entry1, int pid1, int entry2, int pid2){
@@ -73,7 +71,7 @@ public class LamportMutex {
     public void broadcastMsg(String msg){
         for(int i=0; i < comm.numProc; i++){
             if (i != comm.myIdx){
-                comm.sendMsg(i, msg);
+                comm.sendMsg(i, msg);  // returns the acks
             }
         }
     }
