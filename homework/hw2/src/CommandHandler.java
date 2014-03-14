@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CommandHandler {
-    public static ArrayList<Integer> bookStatuses;
+    public static ArrayList<Integer> bookStatuses = null;
     private LamportMutex lamportMutex;
     int serverId;
     int numBooks;
@@ -14,6 +14,7 @@ public class CommandHandler {
         for (int i=0; i<numBooks; i++){
             bookStatuses.add(i, 0);
         }
+
     }
 
     public synchronized String reserveBook(int clientNum, int bookNum){
@@ -70,6 +71,7 @@ public class CommandHandler {
     }
 
     public String handleServerMessage(String s) {
+        // Message format: <tag> <from id> <to id> <message> <null>
         String response;
         String[] splitCommand = s.split(" ");
         LibraryCLI.safePrintln("CommandHandler: identified as server message: " + Arrays.toString(splitCommand));
@@ -89,7 +91,7 @@ public class CommandHandler {
         //int dest = Integer.parseInt(splitCommand[2]);
         if (splitCommand[0].equals("initConnection")) {
             LibraryCLI.safePrintln("initial connection: " + Arrays.toString(splitCommand));
-            response = "ok";
+            response = "ok";  // TODO: why is this being returned on non-init messages?
         }
         else {
             LibraryCLI.safePrintln("new INCOMING server communication" + Arrays.toString(splitCommand));

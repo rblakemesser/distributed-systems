@@ -33,7 +33,8 @@ public class LamportMutex {
 
     public synchronized void releaseCS() {
         q[comm.myIdx] = -1;
-        broadcastMsg("release " + v.getValue(comm.myIdx) + " ? " + ch.getSerializedBookList());
+        broadcastMsg("release " + v.getValue(comm.myIdx) + " ?" + ch.getSerializedBookList());
+        // TODO: NEED TO SEND BOOK STATUSES HERE - static fields won't work across multiple instances of the application
     }
 
     boolean okayCS() {

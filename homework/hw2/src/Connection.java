@@ -17,7 +17,7 @@ class Connection extends Thread {
             BufferedReader connectionReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
             PrintWriter connectionReply = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
             String connectionMessage = connectionReader.readLine();
-            LibraryCLI.safePrintln("Connection - Received from client: " + connectionMessage);
+            LibraryCLI.safePrintln("Connection - Received: " + connectionMessage);
 
             // handle initConnections from other servers
             boolean initConnection = connectionMessage.split(" ")[0].equals("initConnection");
@@ -55,6 +55,6 @@ class Connection extends Thread {
     }
     private boolean isClientMessage(String msg) {
         String[] splitCommand = msg.split(" ");
-        return splitCommand.length == 3;
+        return (splitCommand.length == 3 && splitCommand[0].startsWith("c"));
     }
 }
