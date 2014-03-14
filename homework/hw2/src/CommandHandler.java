@@ -75,15 +75,16 @@ public class CommandHandler {
         String response;
         String[] splitCommand = s.split(" ");
         LibraryCLI.safePrintln("CommandHandler: identified as server message: " + Arrays.toString(splitCommand));
-        int senderIdx = Integer.parseInt(splitCommand[1]);
+        //int senderIdx = Integer.parseInt(splitCommand[1]);  // TODO: Is this right?
 
-        LibraryCLI.safePrintln("CommandHandler: sent by: " + senderIdx);
+        //LibraryCLI.safePrintln("CommandHandler: sent by: " + senderIdx);
         //int dest = Integer.parseInt(splitCommand[2]);
         if (splitCommand[0].equals("initConnection")) {
             LibraryCLI.safePrintln("initial connection: " + Arrays.toString(splitCommand));
             response = "ok";  // TODO: why is this being returned on non-init messages?
         }
         else {
+            int senderIdx = Integer.parseInt(splitCommand[0]);
             LibraryCLI.safePrintln("new INCOMING server communication" + Arrays.toString(splitCommand));
 
             Msg msgObject = new Msg(Integer.parseInt(splitCommand[0]),

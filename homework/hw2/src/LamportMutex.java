@@ -61,7 +61,7 @@ public class LamportMutex {
         v.receiveAction(src, timestamp);
         if(tag.equals("request")) {
             q[src] = timestamp;
-            response = src + " ack " + v.getValue(comm.myIdx);
+            response = comm.myIdx + " ack " + v.getValue(comm.myIdx);
         }
         else if (tag.equals("release")){
             q[src] = -1;
