@@ -73,7 +73,17 @@ public class CommandHandler {
         String response;
         String[] splitCommand = s.split(" ");
         LibraryCLI.safePrintln("CommandHandler: identified as server message: " + Arrays.toString(splitCommand));
-        int senderIdx = Integer.parseInt(splitCommand[1]);
+        int senderIdx = Integer.parseInt(splitCommand[0]);
+        int receiverIdx = Integer.parseInt(splitCommand[1]);
+        String msgType = splitCommand[2];
+        int timestamp = Integer.parseInt(splitCommand[3]);  // remove the #
+
+        if (s.contains("?")){
+            // must be a release message
+            String bookList = s.split("\\?")[1]; // take everything after the question mark
+            setSerializedBookList(bookList.substring(0, bookList.length() - 1)); // remove the hash off the end
+            LibraryCLI.safePrintln("CommandHandler: received book list: " + getSerializedBookList());
+        }
 
         LibraryCLI.safePrintln("CommandHandler: sent by: " + senderIdx);
         //int dest = Integer.parseInt(splitCommand[2]);
@@ -84,17 +94,30 @@ public class CommandHandler {
         else {
             LibraryCLI.safePrintln("new INCOMING server communication" + Arrays.toString(splitCommand));
 
-            Msg msgObject = new Msg(Integer.parseInt(splitCommand[0]),
-                                    Integer.parseInt(splitCommand[1]),
-                                    "msg",
-                                    String.valueOf(lamportMutex.v.getValue(serverId-1)));
-
-            response = lamportMutex.handleMsg(msgObject, senderIdx, splitCommand[2]);
+            String myVector = String.valueOf(lamportMutex.v.getValue(serverId-1));
+            response = lamportMutex.handleMsg(timestamp, senderIdx, splitCommand[2]);
         }
         return response;
     }
 
     public void registerMutex(LamportMutex mutex) {
         this.lamportMutex = mutex;
+    }
+
+    public String getSerializedBookList() {
+        String sbooklist = "";
+        for (int b : bookStatuses) {
+            sbooklist += b + ",";
+        }
+        return sbooklist.substring(0, sbooklist.length() - 1);
+    }
+
+    public void setSerializedBookList(String s) {
+        String[] sbooklist = s.split(",");
+        ArrayList<Integer> newBookList = new ArrayList<Integer>();
+        for (String b : sbooklist) {
+            newBookList.add(Integer.parseInt(b));
+        }
+        bookStatuses = newBookList;
     }
 }
