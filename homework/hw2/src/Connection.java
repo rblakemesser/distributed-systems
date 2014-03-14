@@ -16,7 +16,10 @@ class Connection extends Thread {
         try {
             BufferedReader connectionReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
             PrintWriter connectionReply = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
-            String connectionMessage = connectionReader.readLine();
+
+            String connectionMessage;
+            while ((connectionMessage= connectionReader.readLine()) != null){
+            //String connectionMessage = connectionReader.readLine();
             LibraryCLI.safePrintln("Connection - Received: " + connectionMessage);
 
             // handle initConnections from other servers
@@ -31,7 +34,7 @@ class Connection extends Thread {
                 // TODO do sleep mode stuff
             }
             else { // if not sleep mode, then handle the message
-                LibraryCLI.safePrintln("TCPListen: Sending message to CommandHandler");
+                LibraryCLI.safePrintln("Connection: Sending message to CommandHandler: " + connectionMessage);
                 if(isClientMessage(connectionMessage)) {
                     response = ch.handleClientCommand(connectionMessage);
                 }
@@ -40,19 +43,28 @@ class Connection extends Thread {
                 }
                 try {
                     connectionReply.println(response + "\n");
-                    LibraryCLI.safePrintln("TCPListen: wrote bytes to the socket: " + response);
+                    LibraryCLI.safePrintln("Connection: wrote bytes to the socket: " + response);
                     connectionReply.flush();
-                    s.close();
+                    //connectionReader.close();
+                    //connectionReply.close();
+                    //s.close();
 
                 } catch (Exception e) {
-                    LibraryCLI.safePrintln("TCPListen: IOException after CommandHandler");
+                    LibraryCLI.safePrintln("Connection: IOException after CommandHandler");
                     e.printStackTrace();
                 }
             }
+            }
+            connectionReader.close();
+            connectionReply.close();
+            s.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
     }
+
     private boolean isClientMessage(String msg) {
         String[] splitCommand = msg.split(" ");
         return (splitCommand.length == 3 && splitCommand[0].startsWith("c"));

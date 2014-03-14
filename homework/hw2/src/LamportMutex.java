@@ -21,6 +21,7 @@ public class LamportMutex {
     }
 
     public synchronized void requestCS() {
+        LibraryCLI.safePrintln(comm.myId + "requesting CS");
         v.tick();
         q[comm.myIdx] = v.getValue(comm.myIdx);
         broadcastMsg("request", q[comm.myIdx]);

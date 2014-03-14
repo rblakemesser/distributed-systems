@@ -24,7 +24,7 @@ public class TCPListen extends Thread {
             while (true) {
                 try {
                     Socket connectionSocket = tcpSocket.accept();
-                    new Connection(connectionSocket, ch);
+                    Connection c = new Connection(connectionSocket, ch);
                     // c.start();
                 } catch (IOException e) {
                     e.printStackTrace();
