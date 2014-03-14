@@ -42,7 +42,7 @@ class Connection extends Thread {
                     response = ch.handleServerMessage(connectionMessage);
                 }
                 try {
-                    connectionReply.println(response + "\n");
+                    connectionReply.println(response);
                     LibraryCLI.safePrintln("Connection: wrote bytes to the socket: " + response);
                     connectionReply.flush();
                     //connectionReader.close();

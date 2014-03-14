@@ -88,7 +88,7 @@ public class CommandHandler {
 
             Msg msgObject = new Msg(Integer.parseInt(splitCommand[0]),
                                     Integer.parseInt(splitCommand[1]),
-                                    "msg",
+                                    splitCommand[2],//"msg",
                                     String.valueOf(lamportMutex.v.getValue(serverId-1)));
 
             response = lamportMutex.handleMsg(msgObject, senderIdx, splitCommand[2]);

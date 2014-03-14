@@ -45,6 +45,7 @@ public class Linker {
             dataOut[destId].flush();
             response = dataIn[destId].readLine();
 
+
         } catch (IOException e) {
             LibraryCLI.safePrintln("SendMsg exception: " + e.getMessage());
             e.printStackTrace();
@@ -76,6 +77,8 @@ public class Linker {
                 // Send a hello message to P_i
                 dataOut[server.idx].println("initConnection " + myIdx + " " + server.idx + " " + "hello" + " " + "null");
                 dataOut[server.idx].flush();
+
+                String response = dataIn[server.idx].readLine();
 
                 //LibraryCLI.safePrintln(dataIn[server.idx].readLine());
                 // dataOut[server.idx].close();

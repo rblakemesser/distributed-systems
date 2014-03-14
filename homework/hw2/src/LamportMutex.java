@@ -56,7 +56,7 @@ public class LamportMutex {
 
     public synchronized String handleMsg(Msg m, int src, String tag){
         String response = null;
-        LibraryCLI.safePrintln("LamportMutex: message received" + m);
+        LibraryCLI.safePrintln("LamportMutex: message received " + m + " Tag = " + tag);
         int timestamp = m.getMessageInt();
         v.receiveAction(src, timestamp);
         if(tag.equals("request")) {
