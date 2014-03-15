@@ -24,11 +24,11 @@ class Connection extends Thread {
 
             // handle initConnections from other servers
             boolean initConnection = connectionMessage.split(" ")[0].equals("initConnection");
-            if (!initConnection) {
-                TCPListen.currentMessageNumber++;
-            }
             if (!initConnection && TCPListen.killCounter > 0 && (TCPListen.currentMessageNumber % TCPListen.killCounter == 0)) {
                 TCPListen.sleepMode = true;
+            }
+            if (!initConnection && !TCPListen.sleepMode) {
+                TCPListen.currentMessageNumber++;
             }
             if (TCPListen.sleepMode) {
                 // TODO do sleep mode stuff
