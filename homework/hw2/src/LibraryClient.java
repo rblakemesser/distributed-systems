@@ -60,8 +60,8 @@ public class LibraryClient {
                 }
             }
             else {
-                LibraryCLI.safePrintln(makeRequest(splitCommand));
-                //output.println(makeRequest(splitCommand));
+                //LibraryCLI.safePrintln(makeRequest(splitCommand));
+                output.println(makeRequest(splitCommand));
             }
         }
         output.flush();
