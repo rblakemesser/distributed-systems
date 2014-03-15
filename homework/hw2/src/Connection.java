@@ -32,8 +32,10 @@ class Connection extends Thread {
             }
             if (TCPListen.sleepMode) {
                 // TODO do sleep mode stuff
+                Thread.sleep(TCPListen.timeToWait);
+
             }
-            else { // if not sleep mode, then handle the message
+            { // if not sleep mode, then handle the message
                 LibraryCLI.safePrintln("Connection: Sending message to CommandHandler: " + connectionMessage);
                 if(isClientMessage(connectionMessage)) {
                     response = ch.handleClientCommand(connectionMessage);
@@ -59,6 +61,8 @@ class Connection extends Thread {
             connectionReply.close();
             s.close();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
