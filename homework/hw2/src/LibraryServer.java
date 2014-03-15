@@ -66,6 +66,5 @@ public class LibraryServer {
             System.err.println("Could not start linker");
             e.printStackTrace();
         }
-
     }
 }
