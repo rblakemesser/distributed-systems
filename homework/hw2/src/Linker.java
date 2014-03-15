@@ -40,7 +40,7 @@ public class Linker {
             dataOut[destId].flush();
 
             // SHOULD THIS MOVE ON TO THE NEXT SERVER IF RESPONSE == NULL?
-            while (System.currentTimeMillis() - sendTime < 5000) {
+            while (System.currentTimeMillis() - sendTime < 1000) {
                 if (dataIn[destId].ready()) {
                     response = dataIn[destId].readLine();
                     return response;

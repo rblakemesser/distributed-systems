@@ -34,7 +34,8 @@ public class ServerList {
                     LibraryCLI.safePrintln("ServerList: sending " + request[0] + " " + request[1] +" "+ request[2] + " to " + server.address + ":" + server.port);
                     dataOut.println(request[0] + " " + request[1] + " " + request[2]);
                     dataOut.flush();
-                    while (System.currentTimeMillis() - startTime < 2000) {
+                    long nowTime = System.currentTimeMillis();
+                    while (nowTime - startTime < 1000) {
                         String response;
                         // We break down here if nothing gets sent at all!
                         if (dataIn.ready() && (response = dataIn.readLine()) != null) {
@@ -47,6 +48,7 @@ public class ServerList {
                             connectionToServer.close();
                             return response;
                         }
+                        nowTime = System.currentTimeMillis();
                     }
 
                     if (lastServerAccessed == maxServerId) lastServerAccessed = 0;
