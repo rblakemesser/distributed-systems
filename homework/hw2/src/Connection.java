@@ -18,19 +18,15 @@ class Connection extends Thread {
             PrintWriter connectionReply = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
 
             String connectionMessage;
-            while ((connectionMessage= connectionReader.readLine()) != null){
-            //String connectionMessage = connectionReader.readLine();
-            LibraryCLI.safePrintln("Connection - Received: " + connectionMessage);
+            while (connectionReader.ready()){
+                connectionMessage = connectionReader.readLine();
+                LibraryCLI.safePrintln("Connection - Received: " + connectionMessage);
 
-            // handle initConnections from other servers
-            boolean initConnection = connectionMessage.split(" ")[0].equals("initConnection");
-            if (!initConnection) {
-                TCPListen.currentMessageNumber++;
-            }
-            if (!initConnection && TCPListen.killCounter > 0 && (TCPListen.currentMessageNumber % TCPListen.killCounter == 0)) {
-                TCPListen.sleepMode = true;
-            }
-            else { // if not sleep mode, then handle the message
+                // handle initConnections from other servers
+                boolean initConnection = connectionMessage.split(" ")[0].equals("initConnection");
+                if (!initConnection) {
+                    TCPListen.currentMessageNumber++;
+                }
                 LibraryCLI.safePrintln("Connection: Sending message to CommandHandler: " + connectionMessage);
                 if(isClientMessage(connectionMessage)) {
                     response = ch.handleClientCommand(connectionMessage);
@@ -50,7 +46,6 @@ class Connection extends Thread {
                     LibraryCLI.safePrintln("Connection: IOException after CommandHandler");
                     e.printStackTrace();
                 }
-            }
             }
             connectionReader.close();
             connectionReply.close();

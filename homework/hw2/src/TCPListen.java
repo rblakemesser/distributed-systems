@@ -5,9 +5,8 @@ import java.net.Socket;
 public class TCPListen extends Thread {
     int port;
     static int timeToWait;
-    CommandHandler ch;
     static int killCounter;
-    static boolean sleepMode = false;
+    CommandHandler ch;
     public static int currentMessageNumber = 0;
 
     public TCPListen(int port, CommandHandler commandHandler, int kc, int ttw) {
@@ -22,24 +21,24 @@ public class TCPListen extends Thread {
         try {
             ServerSocket tcpSocket = new ServerSocket(port);
             while (true) {
-                try {
-                    Socket connectionSocket = tcpSocket.accept();
-                    if (!sleepMode) {
-                        Connection c = new Connection(connectionSocket, ch);
+                Socket connectionSocket = tcpSocket.accept();
+                LibraryCLI.safePrintln(killCounter + " " + currentMessageNumber + " " + timeToWait);
+                if ((killCounter > 0) && (currentMessageNumber > 0) && (currentMessageNumber % killCounter == 0)) {
+                    LibraryCLI.safePrintln("SLEEPING!!");
+                    try {
+                        Thread.sleep(timeToWait);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    else {
-                        LibraryCLI.safePrintln("SLEEPING!!");
-                        Thread.sleep(TCPListen.timeToWait);
-                        LibraryCLI.safePrintln("AWAKE!!");
-                    }
-                    // c.start();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    LibraryCLI.safePrintln("AWAKE!!");
+                }
+                else {
+                    Connection c = new Connection(connectionSocket, ch);
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }
