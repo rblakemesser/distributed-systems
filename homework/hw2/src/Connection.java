@@ -24,19 +24,13 @@ class Connection extends Thread {
 
             // handle initConnections from other servers
             boolean initConnection = connectionMessage.split(" ")[0].equals("initConnection");
+            if (!initConnection) {
+                TCPListen.currentMessageNumber++;
+            }
             if (!initConnection && TCPListen.killCounter > 0 && (TCPListen.currentMessageNumber % TCPListen.killCounter == 0)) {
                 TCPListen.sleepMode = true;
             }
-            if (!initConnection && !TCPListen.sleepMode) {
-                TCPListen.currentMessageNumber++;
-            }
-            if (TCPListen.sleepMode) {
-                // TODO do sleep mode stuff
-                LibraryCLI.safePrintln("SLEEPING!!");
-                Thread.sleep(TCPListen.timeToWait);
-                LibraryCLI.safePrintln("AWAKE!!");
-            }
-            { // if not sleep mode, then handle the message
+            else { // if not sleep mode, then handle the message
                 LibraryCLI.safePrintln("Connection: Sending message to CommandHandler: " + connectionMessage);
                 if(isClientMessage(connectionMessage)) {
                     response = ch.handleClientCommand(connectionMessage);
@@ -62,8 +56,6 @@ class Connection extends Thread {
             connectionReply.close();
             s.close();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

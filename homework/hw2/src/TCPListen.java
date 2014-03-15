@@ -24,7 +24,14 @@ public class TCPListen extends Thread {
             while (true) {
                 try {
                     Socket connectionSocket = tcpSocket.accept();
-                    Connection c = new Connection(connectionSocket, ch);
+                    if (!sleepMode) {
+                        Connection c = new Connection(connectionSocket, ch);
+                    }
+                    else {
+                        LibraryCLI.safePrintln("SLEEPING!!");
+                        Thread.sleep(TCPListen.timeToWait);
+                        LibraryCLI.safePrintln("AWAKE!!");
+                    }
                     // c.start();
                 } catch (IOException e) {
                     e.printStackTrace();
