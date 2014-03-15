@@ -1,3 +1,5 @@
+import sun.awt.image.ImageWatched;
+
 public class LamportMutex {
     DirectClock v;
     int[] q;  // request queue
@@ -70,18 +72,16 @@ public class LamportMutex {
         return response;
     }
 
-    public void broadcastMsg(String msg){
-        for(int i=0; i < comm.numProc; i++){
-            if (i != comm.myIdx){
-                String[] response = comm.sendMsg(i, msg).split(" ");  // returns the acks
-                if (response.length < 3) continue;
-                int ts = Integer.parseInt(response[2]);
-                int senderIdx = Integer.parseInt(response[0]);
-                String tag = response[1];
-
-                handleMsg(ts, senderIdx, tag);
+    public synchronized void broadcastMsg(String msg){
+        Thread[] broadcastThreads = new Thread[comm.numProc];
+        for (int i=0; i<comm.numProc; i++){
+            if (i != comm.myIdx) {
+                broadcastThreads[i] = new ThreadedBroadcast(comm, i, msg, this);
+                broadcastThreads[i].start();
             }
         }
     }
 
 }
+
+
