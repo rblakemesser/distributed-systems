@@ -19,7 +19,7 @@ public class ServerList {
     }
 
     public String clientQuery(String[] request) {
-        long startTime = System.currentTimeMillis();
+
         while (true) {
             for (OtherServer server : this.serverList) {
                 if (server.id <= lastServerAccessed){
@@ -27,15 +27,16 @@ public class ServerList {
                 }
                 lastServerAccessed = server.id;
                 try {
+                    long startTime = System.currentTimeMillis();
                     Socket connectionToServer = new Socket(server.address, server.port);
                     PrintWriter dataOut = new PrintWriter(connectionToServer.getOutputStream());
                     BufferedReader dataIn = new BufferedReader(new InputStreamReader(connectionToServer.getInputStream()));
                     LibraryCLI.safePrintln("ServerList: sending " + request[0] + " " + request[1] +" "+ request[2] + " to " + server.address + ":" + server.port);
                     dataOut.println(request[0] + " " + request[1] + " " + request[2]);
                     dataOut.flush();
-                    while (startTime - System.currentTimeMillis() < 2000) {
-                        if (dataIn.ready()) {
-                            String response = dataIn.readLine();
+                    while (System.currentTimeMillis() - startTime < 1500) {
+                        String response;
+                        if ((response = dataIn.readLine()) != null) {
                             LibraryCLI.safePrintln("ServerList: response received from " + server.address + ":" + server.port + " - " + response);
                             if (lastServerAccessed == maxServerId){
                                 lastServerAccessed = 0;
