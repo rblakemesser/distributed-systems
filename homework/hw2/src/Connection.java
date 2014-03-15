@@ -18,38 +18,38 @@ class Connection extends Thread {
             PrintWriter connectionReply = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
 
             String connectionMessage;
-            while (connectionReader.ready()){
-                connectionMessage = connectionReader.readLine();
-                LibraryCLI.safePrintln("Connection - Received: " + connectionMessage);
+            while (true) {
+                if (connectionReader.ready()) {
+                    connectionMessage = connectionReader.readLine();
+                    LibraryCLI.safePrintln("Connection - Received: " + connectionMessage);
 
-                // handle initConnections from other servers
-                boolean initConnection = connectionMessage.split(" ")[0].equals("initConnection");
-                if (!initConnection) {
-                    TCPListen.currentMessageNumber++;
-                }
-                LibraryCLI.safePrintln("Connection: Sending message to CommandHandler: " + connectionMessage);
-                if(isClientMessage(connectionMessage)) {
-                    response = ch.handleClientCommand(connectionMessage);
-                }
-                else {
-                    response = ch.handleServerMessage(connectionMessage);
-                }
-                try {
-                    connectionReply.println(response);
-                    LibraryCLI.safePrintln("Connection: wrote bytes to the socket: " + response);
-                    connectionReply.flush();
-                    //connectionReader.close();
-                    //connectionReply.close();
-                    //s.close();
-
-                } catch (Exception e) {
-                    LibraryCLI.safePrintln("Connection: IOException after CommandHandler");
-                    e.printStackTrace();
+                    // handle initConnections from other servers
+                    boolean initConnection = connectionMessage.split(" ")[0].equals("initConnection");
+                    if (!initConnection) {
+                        TCPListen.currentMessageNumber++;
+                    }
+                    LibraryCLI.safePrintln("Connection: Sending message to CommandHandler: " + connectionMessage);
+                    if(isClientMessage(connectionMessage)) {
+                        response = ch.handleClientCommand(connectionMessage);
+                    }
+                    else {
+                        response = ch.handleServerMessage(connectionMessage);
+                    }
+                    try {
+                        connectionReply.println(response);
+                        LibraryCLI.safePrintln("Connection: wrote bytes to the socket: " + response);
+                        connectionReply.flush();
+                    }
+                    catch (Exception e) {
+                        LibraryCLI.safePrintln("Connection: IOException after CommandHandler");
+                        e.printStackTrace();
+                    }
+                    connectionReader.close();
+                    connectionReply.close();
+                    s.close();
+                    break;
                 }
             }
-            connectionReader.close();
-            connectionReply.close();
-            s.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
