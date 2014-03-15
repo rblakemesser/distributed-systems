@@ -85,7 +85,6 @@ public class CommandHandler {
         String tsComponent = splitCommand[3];
         int timestamp = tsComponent.contains("#") ? Integer.parseInt(tsComponent.substring(0, tsComponent.length() - 1)) : Integer.parseInt(tsComponent);  // remove the #
 
-
         if (s.contains("?")){
             // must be a release message
             String bookList = s.split("\\?")[1]; // take everything after the question mark

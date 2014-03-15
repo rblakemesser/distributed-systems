@@ -23,7 +23,7 @@ public class LamportMutex {
     }
 
     public synchronized void requestCS() {
-        LibraryCLI.safePrintln(comm.myId + "requesting CS");
+        LibraryCLI.safePrintln(comm.myId + " requesting CS");
         v.tick();
         q[comm.myIdx] = v.getValue(comm.myIdx);
         broadcastMsg("request " + q[comm.myIdx]);
@@ -71,13 +71,15 @@ public class LamportMutex {
     }
 
     public void broadcastMsg(String msg){
-        for(int i=0; i < comm.numProc; i++){
+        for(int i=0; i < comm.numProc; i++) {
             if (i != comm.myIdx){
                 String[] response = comm.sendMsg(i, msg).split(" ");  // returns the acks
-                if (response.length < 3) continue;
-                int ts = Integer.parseInt(response[2]);
+                if (response.length < 3) {
+                    continue;
+                }
                 int senderIdx = Integer.parseInt(response[0]);
                 String tag = response[1];
+                int ts = Integer.parseInt(response[2]);
 
                 handleMsg(ts, senderIdx, tag);
             }

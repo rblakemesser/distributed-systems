@@ -46,7 +46,7 @@ public class LibraryClient {
 
         for (String command : input){
             String[] splitCommand = command.split(" ");
-            LibraryCLI.safePrintln("first command: \n" + Arrays.toString(splitCommand));
+            LibraryCLI.safePrintln("command: \n" + Arrays.toString(splitCommand));
             if (splitCommand.length == 2) {
                 long time = new Date().getTime();
                 int timeToWait = Integer.parseInt(splitCommand[1]);

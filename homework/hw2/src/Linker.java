@@ -22,12 +22,6 @@ public class Linker {
         dataIn = new BufferedReader[numProc];
         dataOut = new PrintWriter[numProc];
 
-        // Replacement for Topology - assume all processes are neighbors
-        /*for (int j = 0; j < numProc; j++) {
-            if (j+1 != myId) {
-                neighbors.add(j+1);
-            }
-        }*/
         link = new Socket[numProc];
         //connect(basename, dataIn, dataOut);
     }
@@ -44,9 +38,8 @@ public class Linker {
             LibraryCLI.safePrintln("Linker sending message: " + myIdx + " " + destId + " " + message + "#");
             dataOut[destId].flush();
             response = dataIn[destId].readLine();
-
-
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             LibraryCLI.safePrintln("SendMsg exception: " + e.getMessage());
             e.printStackTrace();
         }
@@ -79,9 +72,6 @@ public class Linker {
                 dataOut[server.idx].flush();
 
                 String response = dataIn[server.idx].readLine();
-
-                //LibraryCLI.safePrintln(dataIn[server.idx].readLine());
-                // dataOut[server.idx].close();
             }
         }
     }
