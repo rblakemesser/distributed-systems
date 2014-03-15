@@ -28,6 +28,7 @@ public class Linker {
 
     public String sendMsg(int destId, String message) {
         String response = null;
+        long sendTime = System.currentTimeMillis();
         try {
             if (!link[destId].isConnected()) {
                 link[destId].connect(link[destId].getRemoteSocketAddress());
@@ -37,7 +38,13 @@ public class Linker {
             dataOut[destId].println(myIdx + " " + destId + " " + message + "#");
             LibraryCLI.safePrintln("Linker sending message: " + myIdx + " " + destId + " " + message + "#");
             dataOut[destId].flush();
-            response = dataIn[destId].readLine();
+            while (System.currentTimeMillis() - sendTime < 5000) {
+                if (dataIn[destId].ready()) {
+                    response = dataIn[destId].readLine();
+                    return response;
+                }
+            }
+           return response;
         }
         catch (IOException e) {
             LibraryCLI.safePrintln("SendMsg exception: " + e.getMessage());

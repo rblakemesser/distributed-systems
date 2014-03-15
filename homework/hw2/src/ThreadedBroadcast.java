@@ -1,6 +1,3 @@
-/**
- * Created by douglasgunter on 3/15/14.
- */
 class ThreadedBroadcast extends Thread implements Runnable{
     Linker comm;
     int i;
@@ -15,14 +12,15 @@ class ThreadedBroadcast extends Thread implements Runnable{
     }
     @Override
     public void run() {
-        String[] response = comm.sendMsg(i, msg).split(" ");  // returns the acks
-        if (response.length < 3) return;
-        int ts = Integer.parseInt(response[2]);
-        int senderIdx = Integer.parseInt(response[0]);
-        String tag = response[1];
+        String response = comm.sendMsg(i, msg);
+        if (response == null || response.equals("null")) return;
+        String[] splitResponse = response.split(" ");  // returns the acks
+        if (splitResponse.length < 3) return;
+        int ts = Integer.parseInt(splitResponse[2]);
+        int senderIdx = Integer.parseInt(splitResponse[0]);
+        String tag = splitResponse[1];
 
         lm.handleMsg(ts, senderIdx, tag);
-        return;
     }
     public String toString(){ return "";}
 }
