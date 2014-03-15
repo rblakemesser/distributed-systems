@@ -1,5 +1,15 @@
-2
+3
 127.0.0.1:8025
 127.0.0.1:8030
+127.0.0.1:8035
 c2 1500
 c2 b2 reserve
+c2 b3 reserve
+c2 b4 reserve
+c2 b5 reserve
+c2 b6 reserve
+c2 b2 return
+c2 b3 return
+c2 b4 return
+c2 b5 return
+c2 b6 return
