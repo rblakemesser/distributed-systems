@@ -38,6 +38,8 @@ public class Linker {
             dataOut[destId].println(myIdx + " " + destId + " " + message + "#");
             LibraryCLI.safePrintln("Linker sending message: " + myIdx + " " + destId + " " + message + "#");
             dataOut[destId].flush();
+
+            // SHOULD THIS MOVE ON TO THE NEXT SERVER IF RESPONSE == NULL?
             while (System.currentTimeMillis() - sendTime < 5000) {
                 if (dataIn[destId].ready()) {
                     response = dataIn[destId].readLine();
